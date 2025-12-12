@@ -1,0 +1,122 @@
+import Link from "next/link";
+import Footer from "@/components/Footer";
+
+export default function ServicesPage() {
+  const services = [
+    {
+      icon: "📊",
+      title: "Budget Tracking",
+      description: "Set daily, weekly, or monthly budgets and track your spending in real-time.",
+    },
+    {
+      icon: "📁",
+      title: "Expense Categories",
+      description: "Organize expenses into categories like Food, Transport, Supplies, and more.",
+    },
+    {
+      icon: "📈",
+      title: "Spending Analytics",
+      description: "Visualize your spending patterns with intuitive charts and graphs.",
+    },
+    {
+      icon: "🔔",
+      title: "Smart Alerts",
+      description: "Get notified when you're approaching your budget limits.",
+    },
+    {
+      icon: "🎯",
+      title: "Savings Goals",
+      description: "Set financial goals and track your progress towards achieving them.",
+    },
+    {
+      icon: "📱",
+      title: "Mobile Friendly",
+      description: "Access your finances anywhere with our responsive web application.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600 flex flex-col">
+      {/* Navigation */}
+      <nav className="w-full px-8 py-4 bg-green-600">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-white font-bold text-xl">$</span>
+            </div>
+            <span className="text-white font-bold text-xl">SpendSense</span>
+          </Link>
+
+          {/* Mobile menu button */}
+          <button className="md:hidden text-white">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          {/* Nav Links */}
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="/" className="text-white text-base font-medium hover:text-green-200 transition">
+              Home
+            </Link>
+            <Link href="/services" className="text-green-200 text-base font-medium underline underline-offset-4">
+              Services
+            </Link>
+            <Link href="/contact" className="text-white text-base font-medium hover:text-green-200 transition">
+              Contact
+            </Link>
+            <Link href="/about" className="text-white text-base font-medium hover:text-green-200 transition">
+              About
+            </Link>
+            <div className="w-px h-5 bg-white/50" />
+            <Link href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
+              Login
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+            Our Services
+          </h1>
+          <p className="text-lg text-white/90 max-w-2xl mx-auto">
+            SpendSense provides powerful tools to help students manage their finances effectively.
+          </p>
+        </div>
+
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {services.map((service, index) => (
+            <div
+              key={index}
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition"
+            >
+              <span className="text-4xl mb-4 block">{service.icon}</span>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {service.title}
+              </h3>
+              <p className="text-white/80">{service.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center">
+          <Link
+            href="/login"
+            className="inline-block px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-full shadow-lg transition"
+          >
+            Start Tracking Now
+          </Link>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
