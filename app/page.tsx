@@ -5,36 +5,43 @@ export default function LandingPage() {
       <nav className="w-full px-8 py-4 bg-green-600">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-green-600 font-bold text-xl">$</span>
+          <a href="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-white font-bold text-xl">$</span>
             </div>
             <span className="text-white font-bold text-xl">SpendSense</span>
-          </div>
+          </a>
+
+          {/* Mobile menu button */}
+          <button className="md:hidden text-white">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-8">
             {["Home", "Services", "Contact", "About"].map((link) => (
-              <a key={link} href="#" className="text-white text-base font-medium hover:text-green-200 transition">
+              <a key={link} href={`#${link.toLowerCase()}`} className="text-white text-base font-medium hover:text-green-200 transition">
                 {link}
               </a>
             ))}
             <div className="w-px h-5 bg-white/50" />
-            <button className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
+            <a href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
               Login
-            </button>
+            </a>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-8 py-16 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16 text-center">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8 md:mb-12">
           Take Control of Your Finances
         </h1>
 
-        {/* Device Mockups */}
-        <div className="flex justify-center mb-12">
+        {/* Device Mockups - hide on small screens */}
+        <div className="hidden sm:flex justify-center mb-12">
           <div className="relative">
             {/* Laptop */}
             <div className="bg-gray-900 rounded-t-xl p-2 w-[500px] shadow-2xl">
@@ -43,7 +50,7 @@ export default function LandingPage() {
                 <DashboardContent />
               </div>
             </div>
-            <div className="bg-gray-800 h-4 w-[520px] -ml-[10px] rounded-b-xl" />
+            <div className="bg-gray-800 h-4 w-[520px] -ml-2.5 rounded-b-xl" />
 
             {/* Phone */}
             <div className="absolute -right-20 top-4 w-44 bg-gray-900 rounded-3xl p-2 shadow-2xl">
@@ -54,20 +61,25 @@ export default function LandingPage() {
 
         {/* Description */}
         <div className="max-w-3xl mx-auto space-y-3 text-white">
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-xl sm:text-2xl font-semibold">
             Smart Budget Tracking Made Simple for Students
           </h2>
-          <p className="text-lg opacity-95">
+          <p className="text-base sm:text-lg opacity-95">
             SpendSense is the ultimate budget management platform designed specifically for students.
           </p>
-          <p className="text-lg opacity-95">
+          <p className="text-base sm:text-lg opacity-95">
             Track your expenses, categorize spending, and achieve your financial goals with our intuitive web-based application.
           </p>
-          <p className="text-lg opacity-95">
+          <p className="text-base sm:text-lg opacity-95">
             From daily allowances to monthly budgets, we help you make every peso count
           </p>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="text-center py-6 text-white/70 text-sm">
+        © 2025 SpendSense. All rights reserved.
+      </footer>
     </div>
   );
 }
