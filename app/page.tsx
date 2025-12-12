@@ -1,6 +1,8 @@
+import Footer from "@/components/Footer";
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600">
+    <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600 flex flex-col">
       {/* Navigation - darker green header */}
       <nav className="w-full px-8 py-4 bg-green-600">
         <div className="flex items-center justify-between">
@@ -21,11 +23,18 @@ export default function LandingPage() {
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-8">
-            {["Home", "Services", "Contact", "About"].map((link) => (
-              <a key={link} href={`#${link.toLowerCase()}`} className="text-white text-base font-medium hover:text-green-200 transition">
-                {link}
-              </a>
-            ))}
+            <a href="/" className="text-green-200 text-base font-medium underline underline-offset-4">
+              Home
+            </a>
+            <a href="/services" className="text-white text-base font-medium hover:text-green-200 transition">
+              Services
+            </a>
+            <a href="/contact" className="text-white text-base font-medium hover:text-green-200 transition">
+              Contact
+            </a>
+            <a href="/about" className="text-white text-base font-medium hover:text-green-200 transition">
+              About
+            </a>
             <div className="w-px h-5 bg-white/50" />
             <a href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
               Login
@@ -35,7 +44,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16 text-center">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8 md:mb-12">
           Take Control of Your Finances
         </h1>
@@ -60,7 +69,7 @@ export default function LandingPage() {
         </div>
 
         {/* Description */}
-        <div className="max-w-3xl mx-auto space-y-3 text-white">
+        <div className="max-w-3xl mx-auto space-y-3 text-white mb-16">
           <h2 className="text-xl sm:text-2xl font-semibold">
             Smart Budget Tracking Made Simple for Students
           </h2>
@@ -76,10 +85,7 @@ export default function LandingPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="text-center py-6 text-white/70 text-sm">
-        © 2025 SpendSense. All rights reserved.
-      </footer>
+      <Footer />
     </div>
   );
 }
