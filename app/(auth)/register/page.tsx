@@ -2,19 +2,60 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    agreeToTerms: false,
-  });
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement registration with Supabase
-    console.log("Register:", formData);
+    setError("");
+    setSuccess("");
+
+    if (!agreeToTerms) {
+      setError("You must agree to the terms & conditions");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    } else {
+      setSuccess("Registration successful! Please check your email to confirm your account, then login.");
+      setLoading(false);
+      // Clear form
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setAgreeToTerms(false);
+    }
   };
 
   return (
@@ -78,14 +119,28 @@ export default function RegisterPage() {
               Registration
             </h1>
 
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center">
+                {error}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="mb-6 p-3 bg-green-400/20 border border-green-400/50 rounded-lg text-green-200 text-sm text-center">
+                {success}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Username Field */}
               <div className="relative border-b-2 border-white/40 pb-3">
                 <input
                   type="text"
                   id="username"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="Username"
                   required
                   className="w-full pr-10 text-lg bg-transparent text-white placeholder-white/80 outline-none"
@@ -100,8 +155,8 @@ export default function RegisterPage() {
                 <input
                   type="email"
                   id="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   required
                   className="w-full pr-10 text-lg bg-transparent text-white placeholder-white/80 outline-none"
@@ -116,10 +171,11 @@ export default function RegisterPage() {
                 <input
                   type="password"
                   id="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   required
+                  minLength={6}
                   className="w-full pr-10 text-lg bg-transparent text-white placeholder-white/80 outline-none"
                 />
                 <svg className="absolute right-0 top-0 w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
@@ -132,8 +188,8 @@ export default function RegisterPage() {
                 <input
                   type="checkbox"
                   id="terms"
-                  checked={formData.agreeToTerms}
-                  onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
+                  checked={agreeToTerms}
+                  onChange={(e) => setAgreeToTerms(e.target.checked)}
                   required
                   className="w-4 h-4 accent-green-400"
                 />
@@ -145,9 +201,10 @@ export default function RegisterPage() {
               {/* Register Button */}
               <button
                 type="submit"
-                className="w-full py-4 bg-gradient-to-b from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 text-white text-xl font-semibold rounded-lg shadow-lg transition"
+                disabled={loading}
+                className="w-full py-4 bg-gradient-to-b from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 text-white text-xl font-semibold rounded-lg shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Register
+                {loading ? "Creating account..." : "Register"}
               </button>
 
               {/* Login Link */}
