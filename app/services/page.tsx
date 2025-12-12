@@ -80,36 +80,36 @@ export default function ServicesPage() {
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
             Our Services
           </h1>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
+          <p className="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto">
             SpendSense provides powerful tools to help students manage their finances effectively.
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition"
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-8 hover:bg-white/20 transition"
             >
-              <span className="text-4xl mb-4 block">{service.icon}</span>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <span className="text-5xl mb-6 block">{service.icon}</span>
+              <h3 className="text-2xl font-semibold text-white mb-3">
                 {service.title}
               </h3>
-              <p className="text-white/80">{service.description}</p>
+              <p className="text-lg text-white/80">{service.description}</p>
             </div>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="text-center">
+        <div className="text-center mb-16">
           <Link
             href="/login"
-            className="inline-block px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-full shadow-lg transition"
+            className="inline-block px-10 py-4 bg-orange-500 hover:bg-orange-600 text-white text-xl font-semibold rounded-full shadow-lg transition"
           >
             Start Tracking Now
           </Link>
