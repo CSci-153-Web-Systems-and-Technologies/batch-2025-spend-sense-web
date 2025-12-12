@@ -21,11 +21,18 @@ export default function LandingPage() {
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-8">
-            {["Home", "Services", "Contact", "About"].map((link) => (
-              <a key={link} href={`#${link.toLowerCase()}`} className="text-white text-base font-medium hover:text-green-200 transition">
-                {link}
-              </a>
-            ))}
+            <a href="/" className="text-green-200 text-base font-medium underline underline-offset-4">
+              Home
+            </a>
+            <a href="/services" className="text-white text-base font-medium hover:text-green-200 transition">
+              Services
+            </a>
+            <a href="/contact" className="text-white text-base font-medium hover:text-green-200 transition">
+              Contact
+            </a>
+            <a href="/about" className="text-white text-base font-medium hover:text-green-200 transition">
+              About
+            </a>
             <div className="w-px h-5 bg-white/50" />
             <a href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
               Login
