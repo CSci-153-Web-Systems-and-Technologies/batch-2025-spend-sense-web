@@ -114,7 +114,7 @@ export default function BudgetGoalsClient({
             <div className="mb-6">
                 <button
                     onClick={() => setIsSetGoalOpen(true)}
-                    className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg font-medium transition"
+                    className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg font-medium transition cursor-pointer"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -163,7 +163,7 @@ export default function BudgetGoalsClient({
                     <p className="text-gray-500 mb-4">Start tracking your spending by setting budget goals for different categories.</p>
                     <button
                         onClick={() => setIsSetGoalOpen(true)}
-                        className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition"
+                        className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition cursor-pointer"
                     >
                         Set Your First Goal
                     </button>
@@ -195,7 +195,7 @@ export default function BudgetGoalsClient({
                                     <div className="flex gap-1">
                                         <button
                                             onClick={() => handleEditGoal(goal)}
-                                            className="p-2 text-orange-400 hover:bg-orange-50 rounded-lg transition"
+                                            className="p-2 text-orange-400 hover:bg-orange-50 rounded-lg transition cursor-pointer"
                                             aria-label="Edit goal"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +204,7 @@ export default function BudgetGoalsClient({
                                         </button>
                                         <button
                                             onClick={() => handleDeleteGoal(goal.id)}
-                                            className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition"
+                                            className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition cursor-pointer"
                                             aria-label="Delete goal"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,11 +250,11 @@ export default function BudgetGoalsClient({
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setIsSetGoalOpen(true)}
-                                        className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                                        className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium cursor-pointer"
                                     >
                                         {percentage >= 75 ? "Increase Budget" : "Reduce Budget"}
                                     </button>
-                                    <button className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
+                                    <button className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium cursor-pointer">
                                         View Details
                                     </button>
                                 </div>
