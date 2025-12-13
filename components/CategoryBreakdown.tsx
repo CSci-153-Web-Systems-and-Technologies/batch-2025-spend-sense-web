@@ -69,15 +69,15 @@ export default function CategoryBreakdown({ expenses }: CategoryBreakdownProps) 
     <div className="bg-white rounded-xl p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">Category Breakdown</h2>
 
-      <div className="h-48">
+      <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+          <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={80}
+              innerRadius={45}
+              outerRadius={70}
               dataKey="value"
               label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
               labelLine={false}
