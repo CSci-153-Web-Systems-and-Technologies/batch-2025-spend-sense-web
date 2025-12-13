@@ -9,6 +9,9 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Expense = {
     id: string;
@@ -235,9 +238,208 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
     const budgetUsed = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
     const budgetRemaining = totalBudget - totalSpent;
 
+    // Generate report data for export
+    const generateReportData = () => {
+        return filteredExpenses.map((expense) => ({
+            Date: new Date(expense.created_at).toLocaleDateString("en-PH"),
+            Description: expense.description,
+            Category: CATEGORY_LABELS[expense.category] || expense.category,
+            Amount: expense.amount,
+        }));
+    };
+
+    // Export as PDF
+    const exportAsPDF = () => {
+        const doc = new jsPDF();
+        const reportData = generateReportData();
+
+        // Title
+        doc.setFontSize(20);
+        doc.setTextColor(34, 197, 94); // Green color
+        doc.text("SpendSense Report", 14, 22);
+
+        // Subtitle
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Generated on ${new Date().toLocaleDateString("en-PH")}`, 14, 30);
+        doc.text(`Period: ${TIME_PERIODS.find(p => p.value === timePeriod)?.label || "All Time"}`, 14, 36);
+
+        // Summary stats
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Total Expenses: ₱${stats.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`, 14, 48);
+        doc.text(`Daily Average: ₱${stats.dailyAverage.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`, 14, 54);
+        doc.text(`Total Transactions: ${stats.transactionCount}`, 14, 60);
+        doc.text(`Budget Used: ${budgetUsed}%`, 14, 66);
+
+        // Table
+        autoTable(doc, {
+            startY: 75,
+            head: [["Date", "Description", "Category", "Amount (₱)"]],
+            body: reportData.map((row) => [
+                row.Date,
+                row.Description,
+                row.Category,
+                row.Amount.toLocaleString("en-PH", { minimumFractionDigits: 2 }),
+            ]),
+            headStyles: { fillColor: [34, 197, 94] },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+        });
+
+        doc.save(`spendsense-report-${new Date().toISOString().split("T")[0]}.pdf`);
+    };
+
+    // Export as Excel
+    const exportAsExcel = () => {
+        const reportData = generateReportData();
+
+        // Add summary row at the top
+        const summaryData = [
+            { Date: "SUMMARY", Description: "", Category: "", Amount: "" },
+            { Date: "Total Expenses", Description: "", Category: "", Amount: stats.totalAmount },
+            { Date: "Daily Average", Description: "", Category: "", Amount: stats.dailyAverage },
+            { Date: "Transactions", Description: "", Category: "", Amount: stats.transactionCount },
+            { Date: "", Description: "", Category: "", Amount: "" },
+            { Date: "TRANSACTIONS", Description: "", Category: "", Amount: "" },
+        ];
+
+        const allData = [...summaryData, ...reportData];
+
+        const ws = XLSX.utils.json_to_sheet(allData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Expenses Report");
+
+        // Auto-size columns
+        const colWidths = [
+            { wch: 12 }, // Date
+            { wch: 30 }, // Description
+            { wch: 15 }, // Category
+            { wch: 15 }, // Amount
+        ];
+        ws["!cols"] = colWidths;
+
+        XLSX.writeFile(wb, `spendsense-report-${new Date().toISOString().split("T")[0]}.xlsx`);
+    };
+
+    // Export as CSV
+    const exportAsCSV = () => {
+        const reportData = generateReportData();
+
+        const headers = ["Date", "Description", "Category", "Amount"];
+        const csvRows = [
+            headers.join(","),
+            ...reportData.map((row) =>
+                [
+                    row.Date,
+                    `"${row.Description.replace(/"/g, '""')}"`,
+                    row.Category,
+                    row.Amount,
+                ].join(",")
+            ),
+        ];
+
+        const csvContent = csvRows.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `spendsense-report-${new Date().toISOString().split("T")[0]}.csv`;
+        link.click();
+    };
+
+    // Print report
+    const printReport = () => {
+        const printWindow = window.open("", "_blank");
+        if (!printWindow) {
+            alert("Please allow popups to print the report");
+            return;
+        }
+
+        const reportData = generateReportData();
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>SpendSense Report</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #22C55E; }
+                    .summary { margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; }
+                    .summary p { margin: 5px 0; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                    th { background: #22C55E; color: white; }
+                    tr:nth-child(even) { background: #f9f9f9; }
+                    .amount { text-align: right; }
+                    @media print {
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>SpendSense Report</h1>
+                <p>Generated on ${new Date().toLocaleDateString("en-PH")}</p>
+                <p>Period: ${TIME_PERIODS.find(p => p.value === timePeriod)?.label || "All Time"}</p>
+                
+                <div class="summary">
+                    <p><strong>Total Expenses:</strong> ₱${stats.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                    <p><strong>Daily Average:</strong> ₱${stats.dailyAverage.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                    <p><strong>Total Transactions:</strong> ${stats.transactionCount}</p>
+                    <p><strong>Budget Used:</strong> ${budgetUsed}%</p>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th class="amount">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${reportData.map((row) => `
+                            <tr>
+                                <td>${row.Date}</td>
+                                <td>${row.Description}</td>
+                                <td>${row.Category}</td>
+                                <td class="amount">₱${row.Amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+                
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    };
+
     const handleExport = (format: string) => {
-        // Placeholder for export functionality
-        alert(`Export as ${format} - Feature coming soon!`);
+        switch (format) {
+            case "PDF":
+                exportAsPDF();
+                break;
+            case "Excel":
+                exportAsExcel();
+                break;
+            case "CSV":
+                exportAsCSV();
+                break;
+            case "Print":
+                printReport();
+                break;
+            default:
+                alert(`Unknown format: ${format}`);
+        }
+    };
+
+    const handleGenerateReport = () => {
+        // Show a toast/notification that report is generated
+        alert(`Report generated for ${TIME_PERIODS.find(p => p.value === timePeriod)?.label}!\n\nTotal: ₱${stats.totalAmount.toLocaleString()}\nTransactions: ${stats.transactionCount}`);
     };
 
     return (
@@ -286,7 +488,10 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                         ))}
                     </select>
                 </div>
-                <button className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition">
+                <button
+                    onClick={handleGenerateReport}
+                    className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition"
+                >
                     Generate Report
                 </button>
             </div>
