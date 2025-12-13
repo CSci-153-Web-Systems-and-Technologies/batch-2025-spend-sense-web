@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { addExpense } from "@/app/actions/expenses";
 
 type AddExpenseModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  prefillData?: {
+    amount?: number;
+    description?: string;
+    category?: string;
+  };
 };
 
 const CATEGORIES = [
@@ -20,10 +25,32 @@ const CATEGORIES = [
   { value: "other", label: "Other", emoji: "📦" },
 ];
 
-export default function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
+export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExpenseModalProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const router = useRouter();
+
+  // Update form when prefillData changes
+  useEffect(() => {
+    if (prefillData) {
+      if (prefillData.amount) setAmount(prefillData.amount.toString());
+      if (prefillData.description) setDescription(prefillData.description);
+      if (prefillData.category) setCategory(prefillData.category);
+    }
+  }, [prefillData]);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setAmount("");
+      setDescription("");
+      setCategory("");
+      setError(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -74,6 +101,8 @@ export default function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProp
               min="0.01"
               required
               placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
               disabled={isPending}
             />
@@ -89,6 +118,8 @@ export default function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProp
               name="description"
               required
               placeholder="What did you spend on?"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
               disabled={isPending}
             />
@@ -102,6 +133,8 @@ export default function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProp
               id="category"
               name="category"
               required
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
               disabled={isPending}
             >

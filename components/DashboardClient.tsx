@@ -4,6 +4,7 @@ import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import AddIncomeModal from "./AddIncomeModal";
 import SetGoalModal from "./SetGoalModal";
+import ScanBarcodeModal from "./ScanBarcodeModal";
 import EditableBudget from "./EditableBudget";
 import SpendingTrends from "./SpendingTrends";
 import CategoryBreakdown from "./CategoryBreakdown";
@@ -110,6 +111,18 @@ export default function DashboardClient({
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isAddIncomeOpen, setIsAddIncomeOpen] = useState(false);
   const [isSetGoalOpen, setIsSetGoalOpen] = useState(false);
+  const [isScanBarcodeOpen, setIsScanBarcodeOpen] = useState(false);
+  const [expensePrefill, setExpensePrefill] = useState<{ amount?: number; description?: string; category?: string } | undefined>();
+
+  const handleBarcodeScanned = (data: { description: string; amount: number; category: string }) => {
+    setExpensePrefill({
+      amount: data.amount,
+      description: data.description,
+      category: data.category,
+    });
+    setIsScanBarcodeOpen(false);
+    setIsAddExpenseOpen(true);
+  };
 
   return (
     <>
@@ -187,7 +200,10 @@ export default function DashboardClient({
             </svg>
             Add Income
           </button>
-          <button className="flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white py-3 px-4 rounded-lg font-medium transition opacity-50 cursor-not-allowed">
+          <button 
+            onClick={() => setIsScanBarcodeOpen(true)}
+            className="flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
             </svg>
@@ -345,7 +361,14 @@ export default function DashboardClient({
       </div>
 
       {/* Add Expense Modal */}
-      <AddExpenseModal isOpen={isAddExpenseOpen} onClose={() => setIsAddExpenseOpen(false)} />
+      <AddExpenseModal 
+        isOpen={isAddExpenseOpen} 
+        onClose={() => {
+          setIsAddExpenseOpen(false);
+          setExpensePrefill(undefined);
+        }} 
+        prefillData={expensePrefill}
+      />
       
       {/* Add Income Modal */}
       <AddIncomeModal isOpen={isAddIncomeOpen} onClose={() => setIsAddIncomeOpen(false)} />
@@ -355,6 +378,13 @@ export default function DashboardClient({
         isOpen={isSetGoalOpen} 
         onClose={() => setIsSetGoalOpen(false)} 
         existingGoals={budgetGoals.map(g => ({ category: g.category, target_amount: g.target_amount }))}
+      />
+
+      {/* Scan Barcode Modal */}
+      <ScanBarcodeModal 
+        isOpen={isScanBarcodeOpen} 
+        onClose={() => setIsScanBarcodeOpen(false)} 
+        onProductScanned={handleBarcodeScanned}
       />
     </>
   );
