@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { updateProfile, uploadProfilePicture, deleteProfilePicture } from "@/app/actions/profile";
 
 type ProfileClientProps = {
     user: {
         id: string;
         email: string;
         username: string;
+        avatarUrl: string | null;
         createdAt: string;
     };
 };
@@ -15,17 +18,81 @@ type ProfileClientProps = {
 export default function ProfileClient({ user }: ProfileClientProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [username, setUsername] = useState(user.username);
+    const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
     const handleSave = async () => {
         setIsSaving(true);
-        // Placeholder for save functionality
-        setTimeout(() => {
-            setIsSaving(false);
+        setError(null);
+
+        const formData = new FormData();
+        formData.append("username", username);
+
+        const result = await updateProfile(formData);
+
+        if (result.error) {
+            setError(result.error);
+        } else {
+            setSuccess("Profile updated successfully!");
             setIsEditing(false);
-            alert("Profile updated successfully!");
-        }, 1000);
+            router.refresh();
+            setTimeout(() => setSuccess(null), 3000);
+        }
+
+        setIsSaving(false);
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        setError(null);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const result = await uploadProfilePicture(formData);
+
+        if (result.error) {
+            setError(result.error);
+        } else if (result.avatarUrl) {
+            setAvatarUrl(result.avatarUrl + "?t=" + Date.now()); // Cache bust
+            setSuccess("Profile picture updated!");
+            router.refresh();
+            setTimeout(() => setSuccess(null), 3000);
+        }
+
+        setIsUploading(false);
+        // Reset file input
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+
+    const handleDeletePicture = async () => {
+        if (!confirm("Are you sure you want to remove your profile picture?")) return;
+
+        setIsUploading(true);
+        setError(null);
+
+        const result = await deleteProfilePicture();
+
+        if (result.error) {
+            setError(result.error);
+        } else {
+            setAvatarUrl(null);
+            setSuccess("Profile picture removed!");
+            router.refresh();
+            setTimeout(() => setSuccess(null), 3000);
+        }
+
+        setIsUploading(false);
     };
 
     const memberSince = new Date(user.createdAt).toLocaleDateString("en-PH", {
@@ -36,14 +103,62 @@ export default function ProfileClient({ user }: ProfileClientProps) {
 
     return (
         <>
+            {/* Success/Error Messages */}
+            {error && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    {error}
+                </div>
+            )}
+            {success && (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                    {success}
+                </div>
+            )}
+
             {/* Profile Header */}
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                     {/* Avatar */}
-                    <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                        <span className="text-white text-4xl font-bold">
-                            {user.username.charAt(0).toUpperCase()}
-                        </span>
+                    <div className="relative group">
+                        {avatarUrl ? (
+                            <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg">
+                                <Image
+                                    src={avatarUrl}
+                                    alt="Profile"
+                                    width={96}
+                                    height={96}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                                <span className="text-white text-4xl font-bold">
+                                    {user.username.charAt(0).toUpperCase()}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Upload Overlay */}
+                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            {isUploading ? (
+                                <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full" />
+                            ) : (
+                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            )}
+                        </div>
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
                     </div>
 
                     {/* User Info */}
@@ -51,6 +166,26 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                         <h2 className="text-2xl font-bold text-gray-900">{user.username}</h2>
                         <p className="text-gray-500">{user.email}</p>
                         <p className="text-sm text-gray-400 mt-1">Member since {memberSince}</p>
+
+                        {/* Avatar Actions */}
+                        <div className="flex gap-2 mt-3 justify-center md:justify-start">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploading}
+                                className="text-sm text-green-600 hover:text-green-700 font-medium disabled:opacity-50"
+                            >
+                                {avatarUrl ? "Change Photo" : "Upload Photo"}
+                            </button>
+                            {avatarUrl && (
+                                <button
+                                    onClick={handleDeletePicture}
+                                    disabled={isUploading}
+                                    className="text-sm text-red-500 hover:text-red-600 font-medium disabled:opacity-50"
+                                >
+                                    Remove
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Edit Button */}

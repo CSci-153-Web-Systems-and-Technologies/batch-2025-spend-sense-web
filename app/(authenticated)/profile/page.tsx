@@ -24,6 +24,7 @@ export default async function ProfilePage() {
         id: user.id,
         email: user.email || "",
         username: username,
+        avatarUrl: user.user_metadata?.avatar_url || null,
         createdAt: user.created_at || new Date().toISOString(),
     };
 

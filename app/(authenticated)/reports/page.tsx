@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import ReportsClient from "@/components/ReportsClient";
 import { getExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
 import { getTotalIncome } from "@/app/actions/income";
@@ -21,6 +22,7 @@ export default async function ReportsPage() {
     }
 
     const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
+    const avatarUrl = user.user_metadata?.avatar_url || null;
 
     // Fetch data for reports
     const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult] = await Promise.all([
@@ -69,11 +71,23 @@ export default async function ReportsPage() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/profile"
-                            className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center hover:ring-2 hover:ring-green-400 transition"
+                            className="w-8 h-8 rounded-full flex items-center justify-center hover:ring-2 hover:ring-green-400 transition overflow-hidden"
                         >
-                            <span className="text-white text-sm font-medium">
-                                {username.charAt(0).toUpperCase()}
-                            </span>
+                            {avatarUrl ? (
+                                <Image
+                                    src={avatarUrl}
+                                    alt="Profile"
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-green-700 flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">
+                                        {username.charAt(0).toUpperCase()}
+                                    </span>
+                                </div>
+                            )}
                         </Link>
                         <span className="text-white text-sm font-medium hidden sm:block">
                             {username}
