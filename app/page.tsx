@@ -24,20 +24,20 @@ export default async function LandingPage() {
           Take Control of Your Finances
         </h1>
 
-        {/* Device Mockups - hide on small screens */}
-        <div className="hidden sm:flex justify-center mb-12">
-          <div className="relative">
-            {/* Laptop */}
-            <div className="bg-gray-900 rounded-t-xl p-2 w-[500px] shadow-2xl">
+        {/* Device Mockups - responsive for all screens */}
+        <div className="flex justify-center mb-8 sm:mb-12 px-4">
+          <div className="relative w-full max-w-[85%] sm:max-w-[400px] md:max-w-[500px]">
+            {/* Laptop - scales with screen */}
+            <div className="bg-gray-900 rounded-t-xl p-1 sm:p-2 shadow-2xl">
               <div className="bg-white rounded-lg overflow-hidden">
                 <BrowserBar />
                 <DashboardContent />
               </div>
             </div>
-            <div className="bg-gray-800 h-4 w-[520px] -ml-2.5 rounded-b-xl" />
+            <div className="bg-gray-800 h-2 sm:h-4 w-[105%] -ml-[2.5%] rounded-b-xl" />
 
-            {/* Phone */}
-            <div className="absolute -right-20 top-4 w-44 bg-gray-900 rounded-3xl p-2 shadow-2xl">
+            {/* Phone - hidden on mobile, visible on sm+ */}
+            <div className="hidden sm:block absolute -right-16 md:-right-20 top-4 w-36 md:w-44 bg-gray-900 rounded-3xl p-2 shadow-2xl">
               <PhoneContent />
             </div>
           </div>

@@ -119,16 +119,75 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   button {
     @apply cursor-pointer;
   }
+
   select {
     @apply cursor-pointer;
   }
+
   a {
     @apply cursor-pointer;
   }
+}
+
+/* iOS/Safari specific fixes */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Enable smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area padding for bottom nav on notched iPhones */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Fix for iOS button styling */
+button,
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Prevent iOS zoom on input focus */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+@media screen and (max-width: 768px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Fix flexbox issues on Safari */
+.flex {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.flex-col {
+  -webkit-flex-direction: column;
+  flex-direction: column;
 }
