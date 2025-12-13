@@ -34,8 +34,8 @@ export default function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps)
       if (result.error) {
         setError(result.error);
       } else {
-        onClose();
         router.refresh();
+        onClose();
       }
     });
   };

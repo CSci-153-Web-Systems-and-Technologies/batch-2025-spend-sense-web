@@ -34,8 +34,8 @@ export default function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProp
       if (result.error) {
         setError(result.error);
       } else {
-        onClose();
         router.refresh();
+        onClose();
       }
     });
   };

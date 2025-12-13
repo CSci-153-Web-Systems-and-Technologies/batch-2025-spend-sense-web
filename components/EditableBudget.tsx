@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateBudget } from "@/app/actions/expenses";
 
@@ -13,6 +13,11 @@ export default function EditableBudget({ initialBudget }: EditableBudgetProps) {
   const [budget, setBudget] = useState(initialBudget);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  // Sync local state when initialBudget prop changes (e.g., when income is added)
+  useEffect(() => {
+    setBudget(initialBudget);
+  }, [initialBudget]);
 
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
