@@ -3,15 +3,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ReportsClient from "@/components/ReportsClient";
+import LogoutButton from "@/components/LogoutButton";
 import { getExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
 import { getTotalIncome } from "@/app/actions/income";
 
-async function signOut() {
-    "use server";
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-    redirect("/");
-}
+
 
 export default async function ReportsPage() {
     const supabase = await createClient();
@@ -92,17 +88,7 @@ export default async function ReportsPage() {
                         <span className="text-white text-sm font-medium hidden sm:block">
                             {username}
                         </span>
-                        <form action={signOut}>
-                            <button
-                                type="submit"
-                                className="text-white/80 hover:text-white text-sm transition ml-2"
-                                title="Logout"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                            </button>
-                        </form>
+                        <LogoutButton />
                     </div>
                 </div>
             </nav>
