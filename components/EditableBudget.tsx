@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateBudget } from "@/app/actions/expenses";
 
@@ -13,6 +13,11 @@ export default function EditableBudget({ initialBudget }: EditableBudgetProps) {
   const [budget, setBudget] = useState(initialBudget);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  // Sync local state when initialBudget prop changes (e.g., when income is added)
+  useEffect(() => {
+    setBudget(initialBudget);
+  }, [initialBudget]);
 
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
@@ -43,14 +48,14 @@ export default function EditableBudget({ initialBudget }: EditableBudgetProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="text-white/80 hover:text-white text-sm"
+          className="text-white/80 hover:text-white text-sm cursor-pointer"
         >
           {isPending ? "..." : "✓"}
         </button>
         <button
           type="button"
           onClick={() => setIsEditing(false)}
-          className="text-white/80 hover:text-white text-sm"
+          className="text-white/80 hover:text-white text-sm cursor-pointer"
         >
           ✕
         </button>
@@ -63,7 +68,7 @@ export default function EditableBudget({ initialBudget }: EditableBudgetProps) {
       <p className="text-2xl font-bold">₱{budget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
       <button
         onClick={() => setIsEditing(true)}
-        className="text-white/60 hover:text-white transition"
+        className="text-white/60 hover:text-white transition cursor-pointer"
         title="Edit budget"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

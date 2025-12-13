@@ -2,7 +2,18 @@
 
 import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
+import AddIncomeModal from "./AddIncomeModal";
+import SetGoalModal from "./SetGoalModal";
+import ScanBarcodeModal from "./ScanBarcodeModal";
 import EditableBudget from "./EditableBudget";
+import SpendingTrends from "./SpendingTrends";
+import CategoryBreakdown from "./CategoryBreakdown";
+
+type BudgetGoal = {
+  id: string;
+  category: string;
+  target_amount: number;
+};
 
 type DashboardClientProps = {
   budget: number;
@@ -15,6 +26,15 @@ type DashboardClientProps = {
     category: string;
     created_at: string;
   }>;
+  income: Array<{
+    id: string;
+    amount: number;
+    description: string;
+    source: string;
+    created_at: string;
+  }>;
+  budgetGoals: BudgetGoal[];
+  spentByCategory: Record<string, number>;
 };
 
 const CATEGORY_STYLES: Record<string, { bg: string; emoji: string }> = {
@@ -25,6 +45,17 @@ const CATEGORY_STYLES: Record<string, { bg: string; emoji: string }> = {
   shopping: { bg: "bg-pink-100", emoji: "🛒" },
   utilities: { bg: "bg-orange-100", emoji: "💡" },
   health: { bg: "bg-green-100", emoji: "💊" },
+  other: { bg: "bg-gray-100", emoji: "📦" },
+};
+
+const SOURCE_STYLES: Record<string, { bg: string; emoji: string }> = {
+  salary: { bg: "bg-green-100", emoji: "💼" },
+  allowance: { bg: "bg-blue-100", emoji: "💵" },
+  freelance: { bg: "bg-purple-100", emoji: "💻" },
+  business: { bg: "bg-orange-100", emoji: "🏪" },
+  gift: { bg: "bg-pink-100", emoji: "🎁" },
+  refund: { bg: "bg-yellow-100", emoji: "↩️" },
+  investment: { bg: "bg-teal-100", emoji: "📈" },
   other: { bg: "bg-gray-100", emoji: "📦" },
 };
 
@@ -54,13 +85,44 @@ function getCategoryLabel(category: string): string {
   return labels[category] || category;
 }
 
+function getSourceLabel(source: string): string {
+  const labels: Record<string, string> = {
+    salary: "Salary",
+    allowance: "Allowance",
+    freelance: "Freelance",
+    business: "Business",
+    gift: "Gift",
+    refund: "Refund",
+    investment: "Investment",
+    other: "Other",
+  };
+  return labels[source] || source;
+}
+
 export default function DashboardClient({
   budget,
   totalSpent,
   remaining,
   expenses,
+  income,
+  budgetGoals,
+  spentByCategory,
 }: DashboardClientProps) {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+  const [isAddIncomeOpen, setIsAddIncomeOpen] = useState(false);
+  const [isSetGoalOpen, setIsSetGoalOpen] = useState(false);
+  const [isScanBarcodeOpen, setIsScanBarcodeOpen] = useState(false);
+  const [expensePrefill, setExpensePrefill] = useState<{ amount?: number; description?: string; category?: string } | undefined>();
+
+  const handleBarcodeScanned = (data: { description: string; amount: number; category: string }) => {
+    setExpensePrefill({
+      amount: data.amount,
+      description: data.description,
+      category: data.category,
+    });
+    setIsScanBarcodeOpen(false);
+    setIsAddExpenseOpen(true);
+  };
 
   return (
     <>
@@ -123,26 +185,34 @@ export default function DashboardClient({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <button
             onClick={() => setIsAddExpenseOpen(true)}
-            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition"
+            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Add Expense
           </button>
-          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition opacity-50 cursor-not-allowed">
+          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+            onClick={() => setIsAddIncomeOpen(true)}
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Add Income
           </button>
-          <button className="flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white py-3 px-4 rounded-lg font-medium transition opacity-50 cursor-not-allowed">
+          <button 
+            onClick={() => setIsScanBarcodeOpen(true)}
+            className="flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
             </svg>
             Scan Barcode
           </button>
-          <button className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition opacity-50 cursor-not-allowed">
+          <button
+            onClick={() => setIsSetGoalOpen(true)}
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
@@ -162,7 +232,7 @@ export default function DashboardClient({
               <p className="text-sm">Click &quot;Add Expense&quot; to get started!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-80 overflow-y-auto">
               {expenses.map((expense, index) => {
                 const style = CATEGORY_STYLES[expense.category] || CATEGORY_STYLES.other;
                 return (
@@ -193,48 +263,129 @@ export default function DashboardClient({
           )}
         </div>
 
-        {/* Budget Goals - Placeholder */}
+        {/* Budget Goals - Dynamic */}
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Budget Goals</h2>
-          <div className="space-y-4">
-            {/* Food Budget */}
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-600">Food Budget</span>
-                <span className="text-sm text-gray-800 font-medium">₱800/₱1,200</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '67%' }}></div>
-              </div>
+          {budgetGoals.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              <p>No budget goals set.</p>
+              <p className="text-sm">Click &quot;Set Goal&quot; to get started!</p>
             </div>
+          ) : (
+            <div className="space-y-4">
+              {budgetGoals.map((goal) => {
+                const spent = spentByCategory[goal.category] || 0;
+                const percentage = Math.min((spent / goal.target_amount) * 100, 100);
+                const isOverBudget = spent > goal.target_amount;
+                const categoryStyle = CATEGORY_STYLES[goal.category] || CATEGORY_STYLES.other;
+                
+                return (
+                  <div key={goal.id}>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-gray-600 flex items-center gap-1">
+                        <span>{categoryStyle.emoji}</span>
+                        {getCategoryLabel(goal.category)}
+                      </span>
+                      <span className={`text-sm font-medium ${isOverBudget ? 'text-red-600' : 'text-gray-800'}`}>
+                        ₱{spent.toLocaleString("en-PH", { minimumFractionDigits: 0 })}/₱{goal.target_amount.toLocaleString("en-PH", { minimumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${
+                          isOverBudget 
+                            ? 'bg-red-500' 
+                            : percentage >= 75 
+                              ? 'bg-red-400' 
+                              : 'bg-green-500'
+                        }`} 
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
-            {/* Transportation */}
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-600">Transportation</span>
-                <span className="text-sm text-gray-800 font-medium">₱300/₱500</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '60%' }}></div>
-              </div>
-            </div>
+        {/* Spending Trends Chart */}
+        <div className="lg:col-span-2">
+          <SpendingTrends expenses={expenses} />
+        </div>
 
-            {/* Entertainment */}
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-600">Entertainment</span>
-                <span className="text-sm text-gray-800 font-medium">₱450/₱600</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-orange-400 h-2 rounded-full" style={{ width: '75%' }}></div>
-              </div>
+        {/* Category Breakdown Chart */}
+        <div>
+          <CategoryBreakdown expenses={expenses} />
+        </div>
+
+        {/* Recent Income */}
+        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Income</h2>
+          {income.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              <p>No income yet.</p>
+              <p className="text-sm">Click &quot;Add Income&quot; to get started!</p>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-4 max-h-80 overflow-y-auto">
+              {income.map((inc, index) => {
+                const style = SOURCE_STYLES[inc.source] || SOURCE_STYLES.other;
+                return (
+                  <div
+                    key={inc.id}
+                    className={`flex items-center justify-between py-3 ${
+                      index < income.length - 1 ? "border-b border-gray-100" : ""
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 ${style.bg} rounded-lg flex items-center justify-center`}>
+                        <span className="text-lg">{style.emoji}</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{inc.description}</p>
+                        <p className="text-sm text-gray-400">
+                          {getSourceLabel(inc.source)} · {formatRelativeTime(inc.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-green-500 font-semibold">
+                      +₱{inc.amount.toLocaleString("en-PH", { minimumFractionDigits: 0 })}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Add Expense Modal */}
-      <AddExpenseModal isOpen={isAddExpenseOpen} onClose={() => setIsAddExpenseOpen(false)} />
+      <AddExpenseModal 
+        isOpen={isAddExpenseOpen} 
+        onClose={() => {
+          setIsAddExpenseOpen(false);
+          setExpensePrefill(undefined);
+        }} 
+        prefillData={expensePrefill}
+      />
+      
+      {/* Add Income Modal */}
+      <AddIncomeModal isOpen={isAddIncomeOpen} onClose={() => setIsAddIncomeOpen(false)} />
+
+      {/* Set Goal Modal */}
+      <SetGoalModal 
+        isOpen={isSetGoalOpen} 
+        onClose={() => setIsSetGoalOpen(false)} 
+        existingGoals={budgetGoals.map(g => ({ category: g.category, target_amount: g.target_amount }))}
+      />
+
+      {/* Scan Barcode Modal */}
+      <ScanBarcodeModal 
+        isOpen={isScanBarcodeOpen} 
+        onClose={() => setIsScanBarcodeOpen(false)} 
+        onProductScanned={handleBarcodeScanned}
+      />
     </>
   );
 }
