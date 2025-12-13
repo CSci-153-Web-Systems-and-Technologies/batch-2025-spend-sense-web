@@ -2,18 +2,60 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
-export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+export default function RegisterPage() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login with Supabase
-    console.log("Login:", formData);
+    setError("");
+    setSuccess("");
+
+    if (!agreeToTerms) {
+      setError("You must agree to the terms & conditions");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    } else {
+      setSuccess("Registration successful! Please check your email to confirm your account, then login.");
+      setLoading(false);
+      // Clear form
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setAgreeToTerms(false);
+    }
   };
 
   return (
@@ -71,20 +113,50 @@ export default function LoginPage() {
             </svg>
           </Link>
 
-          {/* Login Card */}
-          <div className="bg-gradient-to-b from-green-600 to-green-700 rounded-2xl border border-green-400/30 px-12 py-10 w-[420px] shadow-2xl">
+          {/* Registration Card */}
+          <div className="bg-gradient-to-b from-green-600/90 to-green-700/90 backdrop-blur-sm rounded-2xl border border-green-400/30 px-12 py-10 w-[420px] shadow-2xl">
             <h1 className="text-4xl font-bold text-white text-center mb-10">
-              Login
+              Registration
             </h1>
 
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center">
+                {error}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="mb-6 p-3 bg-green-400/20 border border-green-400/50 rounded-lg text-green-200 text-sm text-center">
+                {success}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Username Field */}
+              <div className="relative border-b-2 border-white/40 pb-3">
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Username"
+                  required
+                  className="w-full pr-10 text-lg bg-transparent text-white placeholder-white/80 outline-none"
+                />
+                <svg className="absolute right-0 top-0 w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+
               {/* Email Field */}
               <div className="relative border-b-2 border-white/40 pb-3">
                 <input
                   type="email"
                   id="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   required
                   className="w-full pr-10 text-lg bg-transparent text-white placeholder-white/80 outline-none"
@@ -99,10 +171,11 @@ export default function LoginPage() {
                 <input
                   type="password"
                   id="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   required
+                  minLength={6}
                   className="w-full pr-10 text-lg bg-transparent text-white placeholder-white/80 outline-none"
                 />
                 <svg className="absolute right-0 top-0 w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
@@ -110,35 +183,35 @@ export default function LoginPage() {
                 </svg>
               </div>
 
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 text-white/80 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.rememberMe}
-                    onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                    className="w-4 h-4 accent-green-400"
-                  />
-                  Remember me
+              {/* Terms & Conditions */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={agreeToTerms}
+                  onChange={(e) => setAgreeToTerms(e.target.checked)}
+                  required
+                  className="w-4 h-4 accent-green-400"
+                />
+                <label htmlFor="terms" className="text-sm text-white/80 cursor-pointer">
+                  I agree to the terms & conditions
                 </label>
-                <Link href="/forgot-password" className="text-white/80 hover:text-white transition">
-                  Forget Password
-                </Link>
               </div>
 
-              {/* Login Button */}
+              {/* Register Button */}
               <button
                 type="submit"
-                className="w-full py-4 bg-gradient-to-b from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 text-white text-xl font-semibold rounded-lg shadow-lg transition"
+                disabled={loading}
+                className="w-full py-4 bg-gradient-to-b from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 text-white text-xl font-semibold rounded-lg shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Login
+                {loading ? "Creating account..." : "Register"}
               </button>
 
-              {/* Register Link */}
+              {/* Login Link */}
               <p className="text-center text-white/90 text-base pt-2">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="text-white font-semibold hover:underline">
-                  Register
+                Already have an account?{" "}
+                <Link href="/login" className="text-white font-semibold hover:underline">
+                  Login
                 </Link>
               </p>
             </form>
