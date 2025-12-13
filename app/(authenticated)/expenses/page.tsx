@@ -54,7 +54,7 @@ export default async function ExpensesPage() {
             <Link href="/reports" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
               Reports
             </Link>
-            <Link href="#" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+            <Link href="/budget-goals" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
               Budget Goals
             </Link>
           </div>

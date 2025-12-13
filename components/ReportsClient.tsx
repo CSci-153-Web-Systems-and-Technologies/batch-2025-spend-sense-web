@@ -490,7 +490,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                 </div>
                 <button
                     onClick={handleGenerateReport}
-                    className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition"
+                    className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition cursor-pointer"
                 >
                     Generate Report
                 </button>
@@ -614,25 +614,25 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <button
                         onClick={() => handleExport("PDF")}
-                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium cursor-pointer"
                     >
                         Export as PDF
                     </button>
                     <button
                         onClick={() => handleExport("Excel")}
-                        className="px-4 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition font-medium"
+                        className="px-4 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition font-medium cursor-pointer"
                     >
                         Export as Excel
                     </button>
                     <button
                         onClick={() => handleExport("CSV")}
-                        className="px-4 py-2 border border-orange-400 text-orange-500 rounded-lg hover:bg-orange-50 transition font-medium"
+                        className="px-4 py-2 border border-orange-400 text-orange-500 rounded-lg hover:bg-orange-50 transition font-medium cursor-pointer"
                     >
                         Export as CSV
                     </button>
                     <button
                         onClick={() => handleExport("Print")}
-                        className="px-4 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition font-medium"
+                        className="px-4 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition font-medium cursor-pointer"
                     >
                         Print Report
                     </button>
