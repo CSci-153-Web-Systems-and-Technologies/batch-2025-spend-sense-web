@@ -30,11 +30,11 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
   const [inputMethod, setInputMethod] = useState<InputMethod>("manual");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Barcode input
   const [manualBarcode, setManualBarcode] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Camera
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -42,7 +42,9 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
   const scanningRef = useRef<boolean>(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  
+  const [availableCameras, setAvailableCameras] = useState<MediaDeviceInfo[]>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState<string>("");
+
   // Product details
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -55,21 +57,21 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
   // Stop camera function
   const stopCamera = useCallback(() => {
     scanningRef.current = false;
-    
+
     if (readerRef.current) {
       readerRef.current.reset();
       readerRef.current = null;
     }
-    
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
-    
+
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
-    
+
     setIsCameraActive(false);
   }, []);
 
@@ -113,25 +115,61 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
     setScannedBarcode(barcode);
 
     try {
-      const result = await lookupProduct(barcode);
-      if (result && result.product) {
-        setProductName(result.product.name);
-        setProductCategory(result.product.category || "food");
-        if (result.product.price) {
-          setProductPrice(result.product.price.toString());
+      // Try to check user's saved products via server action (only works on localhost)
+      // Skip this if we're on a tunnel/proxy to avoid "Invalid Server Actions request" error
+      const isLocalhost = typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+      if (isLocalhost) {
+        try {
+          const result = await lookupProduct(barcode);
+          if (result && result.product && result.source === "user") {
+            // Found in user's saved products
+            setProductName(result.product.name);
+            setProductCategory(result.product.category || "food");
+            if (result.product.price) {
+              setProductPrice(result.product.price.toString());
+            }
+            setProductSource(result.source);
+            setStep("details");
+            return;
+          }
+        } catch (serverError) {
+          console.log("Server action failed, using API route instead");
         }
-        setProductSource(result.source);
-        setStep("details");
-      } else {
-        setError("Product not found. You can enter details manually below.");
-        setProductName("");
-        setProductCategory("food");
-        setProductSource(null);
-        setStep("details");
       }
+
+      // Use API route for OpenFoodFacts lookup (works through tunnels)
+      console.log("Looking up barcode via API:", barcode);
+      const response = await fetch(`/api/products/lookup?barcode=${barcode}`);
+      const apiResult = await response.json();
+      console.log("API response:", apiResult);
+
+      if (response.ok && apiResult.product) {
+        setProductName(apiResult.product.name);
+        setProductCategory(apiResult.product.category || "food");
+        setProductSource("openfoodfacts");
+        setStep("details");
+        return;
+      }
+
+      // Product not found
+      setError("Product not found in database. Please enter details manually.");
+      setProductName("");
+      setProductCategory("food");
+      setProductSource(null);
+      setStep("details");
+
     } catch (err) {
       console.error("Lookup error:", err);
-      setError("Lookup failed (network/auth/CORS?). Enter details manually or try again.");
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      if (errorMessage.includes("fetch") || errorMessage.includes("network")) {
+        setError("Network error. Please check your internet connection and try again.");
+      } else if (errorMessage.includes("timeout") || errorMessage.includes("abort")) {
+        setError("Request timed out. Please check your connection and try again.");
+      } else {
+        setError("Couldn't look up product. Please enter details manually.");
+      }
       setProductName("");
       setProductCategory("food");
       setProductSource(null);
@@ -168,7 +206,7 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
       const imageUrl = URL.createObjectURL(file);
       const result = await reader.decodeFromImageUrl(imageUrl);
       URL.revokeObjectURL(imageUrl);
-      
+
       const barcode = result.getText();
       await lookupBarcode(barcode);
     } catch {
@@ -178,25 +216,49 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
   };
 
   // Start camera scanning
-  const startCamera = async () => {
+  const startCamera = async (deviceId?: string) => {
     setCameraError(null);
     setError(null);
-    
+
     try {
+      // Check if mediaDevices is available (HTTPS required on mobile)
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setCameraError("Camera not available. Make sure you're using HTTPS and have granted camera permission.");
+        return;
+      }
+
+      // First enumerate available cameras
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      setAvailableCameras(videoDevices);
+
+      // Build video constraints
+      const videoConstraints: MediaTrackConstraints = {
+        width: { ideal: 1920, min: 640 },
+        height: { ideal: 1080, min: 480 },
+      };
+
+      // If a specific device is selected, use it
+      if (deviceId) {
+        videoConstraints.deviceId = { exact: deviceId };
+        setSelectedCameraId(deviceId);
+      } else if (selectedCameraId) {
+        videoConstraints.deviceId = { exact: selectedCameraId };
+      } else {
+        // Default: try back camera on mobile, any camera on desktop
+        videoConstraints.facingMode = { ideal: 'environment' };
+      }
+
       // Request camera permission
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'environment' // Use back camera on mobile devices
-        }
+        video: videoConstraints
       });
-      
+
       streamRef.current = stream;
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        
+
         // Wait for video to be ready and playing
         await new Promise<void>((resolve, reject) => {
           const video = videoRef.current;
@@ -204,37 +266,37 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
             reject(new Error("Video element not found"));
             return;
           }
-          
+
           const onCanPlay = () => {
             video.removeEventListener("canplay", onCanPlay);
             video.play()
               .then(() => resolve())
               .catch(reject);
           };
-          
+
           video.addEventListener("canplay", onCanPlay);
-          
+
           // Timeout fallback
           setTimeout(() => {
             video.removeEventListener("canplay", onCanPlay);
             video.play().then(() => resolve()).catch(reject);
           }, 1000);
         });
-        
+
         // Video is now playing, show it
         setIsCameraActive(true);
-        
+
         // Start barcode scanning
         const reader = new BrowserMultiFormatReader();
         readerRef.current = reader;
         scanningRef.current = true;
-        
+
         // Continuous scanning loop
         const scan = async () => {
           if (!scanningRef.current || !videoRef.current || !readerRef.current) {
             return;
           }
-          
+
           try {
             // Create a canvas to capture the current video frame
             const canvas = document.createElement("canvas");
@@ -242,11 +304,11 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
             canvas.width = video.videoWidth || 640;
             canvas.height = video.videoHeight || 480;
             const ctx = canvas.getContext("2d");
-            
+
             if (ctx && canvas.width > 0 && canvas.height > 0) {
               ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
               const imageData = canvas.toDataURL("image/png");
-              
+
               try {
                 const result = await reader.decodeFromImageUrl(imageData);
                 if (result) {
@@ -262,13 +324,13 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
           } catch {
             // Error processing frame, continue
           }
-          
+
           // Continue scanning
           if (scanningRef.current) {
             setTimeout(scan, 200); // Scan every 200ms
           }
         };
-        
+
         // Start scanning after a short delay
         setTimeout(scan, 500);
       }
@@ -327,7 +389,7 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
       setIsLoading(false);
     }
 
-    const description = quantity > 1 
+    const description = quantity > 1
       ? `${productName.trim()} (x${quantity})`
       : productName.trim();
 
@@ -380,31 +442,28 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
             <div className="flex border-b border-gray-200 mb-4">
               <button
                 onClick={() => handleTabChange("manual")}
-                className={`flex-1 py-2 text-sm font-medium transition cursor-pointer ${
-                  inputMethod === "manual"
-                    ? "text-orange-500 border-b-2 border-orange-500"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-2 text-sm font-medium transition cursor-pointer ${inputMethod === "manual"
+                  ? "text-orange-500 border-b-2 border-orange-500"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 ✏️ Manual
               </button>
               <button
                 onClick={() => handleTabChange("camera")}
-                className={`flex-1 py-2 text-sm font-medium transition cursor-pointer ${
-                  inputMethod === "camera"
-                    ? "text-orange-500 border-b-2 border-orange-500"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-2 text-sm font-medium transition cursor-pointer ${inputMethod === "camera"
+                  ? "text-orange-500 border-b-2 border-orange-500"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 📹 Camera
               </button>
               <button
                 onClick={() => handleTabChange("upload")}
-                className={`flex-1 py-2 text-sm font-medium transition cursor-pointer ${
-                  inputMethod === "upload"
-                    ? "text-orange-500 border-b-2 border-orange-500"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-2 text-sm font-medium transition cursor-pointer ${inputMethod === "upload"
+                  ? "text-orange-500 border-b-2 border-orange-500"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 📷 Upload
               </button>
@@ -463,11 +522,11 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
                     {cameraError}
                   </div>
                 )}
-                
+
                 {/* Always render video element, just hide when not active */}
                 <div className="space-y-3">
-                  <div 
-                    className="relative bg-black rounded-lg overflow-hidden" 
+                  <div
+                    className="relative bg-black rounded-lg overflow-hidden"
                     style={{ minHeight: "256px", display: isCameraActive ? "block" : "none" }}
                   >
                     <video
@@ -490,10 +549,10 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
                       </span>
                     </div>
                   </div>
-                  
+
                   {!isCameraActive ? (
                     <button
-                      onClick={startCamera}
+                      onClick={() => startCamera()}
                       className="w-full py-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 transition cursor-pointer"
                     >
                       <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -503,12 +562,34 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
                       <p className="text-sm text-gray-400 mt-1">Point at barcode to scan</p>
                     </button>
                   ) : (
-                    <button
-                      onClick={stopCamera}
-                      className="w-full py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition cursor-pointer"
-                    >
-                      Stop Camera
-                    </button>
+                    <div className="space-y-2">
+                      {/* Camera selector dropdown */}
+                      {availableCameras.length > 1 && (
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm text-gray-600 whitespace-nowrap">Camera:</label>
+                          <select
+                            value={selectedCameraId}
+                            onChange={(e) => {
+                              stopCamera();
+                              setTimeout(() => startCamera(e.target.value), 100);
+                            }}
+                            className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                          >
+                            {availableCameras.map((camera, index) => (
+                              <option key={camera.deviceId} value={camera.deviceId}>
+                                {camera.label || `Camera ${index + 1}`}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      <button
+                        onClick={stopCamera}
+                        className="w-full py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition cursor-pointer"
+                      >
+                        Stop Camera
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -517,6 +598,7 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
             {/* Upload Image */}
             {inputMethod === "upload" && (
               <div className="space-y-4">
+                {/* Hidden inputs - one for camera, one for gallery */}
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -524,11 +606,17 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
                   onChange={handleFileUpload}
                   className="hidden"
                 />
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-orange-400 transition"
-                >
-                  {isLoading ? (
+                <input
+                  type="file"
+                  id="cameraInput"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+
+                {isLoading ? (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <svg className="animate-spin h-10 w-10 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -536,18 +624,38 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
                       </svg>
                       <p className="text-gray-600 font-medium">Scanning barcode...</p>
                     </div>
-                  ) : (
-                    <>
-                      <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Take Photo Button */}
+                    <button
+                      onClick={() => document.getElementById('cameraInput')?.click()}
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition"
+                    >
+                      <svg className="w-10 h-10 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <p className="text-gray-600 font-medium text-sm">Take Photo</p>
+                      <p className="text-xs text-gray-400 mt-1">Use camera</p>
+                    </button>
+
+                    {/* Choose from Gallery Button */}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition"
+                    >
+                      <svg className="w-10 h-10 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      <p className="text-gray-600 font-medium">Click to upload barcode image</p>
-                      <p className="text-sm text-gray-400 mt-1">Supports JPG, PNG, or GIF</p>
-                    </>
-                  )}
-                </div>
+                      <p className="text-gray-600 font-medium text-sm">Gallery</p>
+                      <p className="text-xs text-gray-400 mt-1">Choose image</p>
+                    </button>
+                  </div>
+                )}
+
                 <p className="text-xs text-gray-500 text-center">
-                  Take a clear photo of the barcode for best results
+                  📷 Take a clear photo of the barcode for best results
                 </p>
               </div>
             )}
@@ -661,19 +769,24 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
               </select>
             </div>
 
-            {/* Save for later checkbox */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="saveForLater"
-                checked={saveForLater}
-                onChange={(e) => setSaveForLater(e.target.checked)}
-                className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-              />
-              <label htmlFor="saveForLater" className="text-sm text-gray-600">
+            {/* Save for later checkbox - custom styled for iOS */}
+            <label className="flex items-center gap-3 cursor-pointer">
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={saveForLater}
+                  onChange={(e) => setSaveForLater(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className={`w-10 h-6 rounded-full transition-colors ${saveForLater ? 'bg-orange-500' : 'bg-gray-300'
+                  }`}></div>
+                <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${saveForLater ? 'translate-x-4' : 'translate-x-0'
+                  }`}></div>
+              </div>
+              <span className="text-sm text-gray-600">
                 Save product for quick access next time
-              </label>
-            </div>
+              </span>
+            </label>
 
             {/* Buttons */}
             <div className="flex gap-3 pt-2">
