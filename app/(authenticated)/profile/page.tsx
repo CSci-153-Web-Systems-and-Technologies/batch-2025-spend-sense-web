@@ -1,10 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import BudgetGoalsClient from "@/components/BudgetGoalsClient";
-import { getTotalSpent, getBudget } from "@/app/actions/expenses";
-import { getTotalIncome } from "@/app/actions/income";
-import { getBudgetGoals, getSpentByCategory } from "@/app/actions/budget-goals";
+import ProfileClient from "@/components/ProfileClient";
 
 async function signOut() {
     "use server";
@@ -13,7 +10,7 @@ async function signOut() {
     redirect("/");
 }
 
-export default async function BudgetGoalsPage() {
+export default async function ProfilePage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -23,19 +20,12 @@ export default async function BudgetGoalsPage() {
 
     const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
 
-    // Fetch data
-    const [budgetGoals, spentByCategory, totalSpentResult, budgetResult, totalIncomeResult] = await Promise.all([
-        getBudgetGoals(),
-        getSpentByCategory(),
-        getTotalSpent(),
-        getBudget(),
-        getTotalIncome(),
-    ]);
-
-    const totalSpent = totalSpentResult.total;
-    const baseBudget = budgetResult.budget?.amount || 10000;
-    const totalIncome = totalIncomeResult.total;
-    const totalBudget = baseBudget + totalIncome;
+    const profileData = {
+        id: user.id,
+        email: user.email || "",
+        username: username,
+        createdAt: user.created_at || new Date().toISOString(),
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
@@ -61,7 +51,7 @@ export default async function BudgetGoalsPage() {
                         <Link href="/reports" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
                             Reports
                         </Link>
-                        <Link href="/budget-goals" className="text-white text-sm font-medium hover:text-green-200 transition underline underline-offset-4">
+                        <Link href="/budget-goals" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
                             Budget Goals
                         </Link>
                     </div>
@@ -70,7 +60,7 @@ export default async function BudgetGoalsPage() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/profile"
-                            className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center hover:ring-2 hover:ring-green-400 transition"
+                            className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center ring-2 ring-green-400"
                         >
                             <span className="text-white text-sm font-medium">
                                 {username.charAt(0).toUpperCase()}
@@ -94,20 +84,15 @@ export default async function BudgetGoalsPage() {
                 </div>
             </nav>
 
-            {/* Budget Goals Content */}
+            {/* Profile Content */}
             <main className="flex-1 px-6 py-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Budget Goals</h1>
-                    <p className="text-gray-500 text-sm">Set and track your spending goals for better financial management.</p>
+                    <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
+                    <p className="text-gray-500 text-sm">Manage your account settings and preferences.</p>
                 </div>
 
-                <BudgetGoalsClient
-                    budgetGoals={budgetGoals}
-                    spentByCategory={spentByCategory}
-                    totalBudget={totalBudget}
-                    totalSpent={totalSpent}
-                />
+                <ProfileClient user={profileData} />
             </main>
         </div>
     );

@@ -67,11 +67,14 @@ export default async function ReportsPage() {
 
                     {/* User Menu */}
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center">
+                        <Link
+                            href="/profile"
+                            className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center hover:ring-2 hover:ring-green-400 transition"
+                        >
                             <span className="text-white text-sm font-medium">
                                 {username.charAt(0).toUpperCase()}
                             </span>
-                        </div>
+                        </Link>
                         <span className="text-white text-sm font-medium hidden sm:block">
                             {username}
                         </span>
