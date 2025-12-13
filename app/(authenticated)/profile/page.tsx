@@ -1,0 +1,90 @@
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import ProfileClient from "@/components/ProfileClient";
+import LogoutButton from "@/components/LogoutButton";
+import MobileNav from "@/components/MobileNav";
+
+
+
+export default async function ProfilePage() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect("/login");
+    }
+
+    const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
+
+    const profileData = {
+        id: user.id,
+        email: user.email || "",
+        username: username,
+        avatarUrl: user.user_metadata?.avatar_url || null,
+        createdAt: user.created_at || new Date().toISOString(),
+    };
+
+    return (
+        <div className="min-h-screen flex flex-col bg-gray-100 pb-16 md:pb-0">
+            {/* Navigation */}
+            <nav className="w-full px-4 sm:px-6 py-3 bg-green-600">
+                <div className="flex items-center justify-between">
+                    {/* Logo */}
+                    <Link href="/dashboard" className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
+                            <span className="text-white font-bold text-lg">$</span>
+                        </div>
+                        <span className="text-white font-bold text-lg">SpendSense</span>
+                    </Link>
+
+                    {/* Nav Links */}
+                    <div className="hidden md:flex items-center gap-6">
+                        <Link href="/dashboard" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+                            Dashboard
+                        </Link>
+                        <Link href="/expenses" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+                            Expenses
+                        </Link>
+                        <Link href="/reports" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+                            Reports
+                        </Link>
+                        <Link href="/budget-goals" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+                            Budget Goals
+                        </Link>
+                    </div>
+
+                    {/* User Menu */}
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/profile"
+                            className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center ring-2 ring-green-400"
+                        >
+                            <span className="text-white text-sm font-medium">
+                                {username.charAt(0).toUpperCase()}
+                            </span>
+                        </Link>
+                        <span className="text-white text-sm font-medium hidden sm:block">
+                            {username}
+                        </span>
+                        <LogoutButton />
+                    </div>
+                </div>
+            </nav>
+
+            {/* Profile Content */}
+            <main className="flex-1 px-6 py-6">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
+                    <p className="text-gray-500 text-sm">Manage your account settings and preferences.</p>
+                </div>
+
+                <ProfileClient user={profileData} />
+            </main>
+
+            {/* Mobile Navigation */}
+            <MobileNav />
+        </div>
+    );
+}
