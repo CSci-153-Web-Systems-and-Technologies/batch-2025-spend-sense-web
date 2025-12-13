@@ -117,78 +117,81 @@ export default function ProfileClient({ user }: ProfileClientProps) {
 
             {/* Profile Header */}
             <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-                <div className="flex flex-col md:flex-row items-center gap-6">
-                    {/* Avatar */}
-                    <div className="relative group">
-                        {avatarUrl ? (
-                            <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg">
-                                <Image
-                                    src={avatarUrl}
-                                    alt="Profile"
-                                    width={96}
-                                    height={96}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        ) : (
-                            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                                <span className="text-white text-4xl font-bold">
-                                    {user.username.charAt(0).toUpperCase()}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Upload Overlay */}
-                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            {isUploading ? (
-                                <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full" />
+                <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between gap-6">
+                    {/* Left: Avatar + User Info */}
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                        {/* Avatar */}
+                        <div className="relative group">
+                            {avatarUrl ? (
+                                <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg">
+                                    <Image
+                                        src={avatarUrl}
+                                        alt="Profile"
+                                        width={96}
+                                        height={96}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
                             ) : (
-                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <span className="text-white text-4xl font-bold">
+                                        {user.username.charAt(0).toUpperCase()}
+                                    </span>
+                                </div>
                             )}
-                        </div>
 
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/jpeg,image/png,image/gif,image/webp"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
-                    </div>
-
-                    {/* User Info */}
-                    <div className="text-center md:text-left flex-1">
-                        <h2 className="text-2xl font-bold text-gray-900">{user.username}</h2>
-                        <p className="text-gray-500">{user.email}</p>
-                        <p className="text-sm text-gray-400 mt-1">Member since {memberSince}</p>
-
-                        {/* Avatar Actions */}
-                        <div className="flex gap-2 mt-3 justify-center md:justify-start">
-                            <button
+                            {/* Upload Overlay */}
+                            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
                                 onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                                className="text-sm text-green-600 hover:text-green-700 font-medium disabled:opacity-50"
                             >
-                                {avatarUrl ? "Change Photo" : "Upload Photo"}
-                            </button>
-                            {avatarUrl && (
+                                {isUploading ? (
+                                    <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full" />
+                                ) : (
+                                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                )}
+                            </div>
+
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/jpeg,image/png,image/gif,image/webp"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                        </div>
+
+                        {/* User Info */}
+                        <div className="text-center md:text-left">
+                            <h2 className="text-2xl font-bold text-gray-900">{user.username}</h2>
+                            <p className="text-gray-500">{user.email}</p>
+                            <p className="text-sm text-gray-400 mt-1">Member since {memberSince}</p>
+
+                            {/* Avatar Actions */}
+                            <div className="flex gap-2 mt-3 justify-center md:justify-start">
                                 <button
-                                    onClick={handleDeletePicture}
+                                    onClick={() => fileInputRef.current?.click()}
                                     disabled={isUploading}
-                                    className="text-sm text-red-500 hover:text-red-600 font-medium disabled:opacity-50"
+                                    className="text-sm text-green-600 hover:text-green-700 font-medium disabled:opacity-50"
                                 >
-                                    Remove
+                                    {avatarUrl ? "Change Photo" : "Upload Photo"}
                                 </button>
-                            )}
+                                {avatarUrl && (
+                                    <button
+                                        onClick={handleDeletePicture}
+                                        disabled={isUploading}
+                                        className="text-sm text-red-500 hover:text-red-600 font-medium disabled:opacity-50"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Edit Button */}
+                    {/* Right: Edit Button */}
                     <button
                         onClick={() => setIsEditing(!isEditing)}
                         className="px-6 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition font-medium"
@@ -199,7 +202,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 {/* Left Column - Account Settings */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Account Information */}
