@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import DashboardClient from "@/components/DashboardClient";
 import { getRecentExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
+import { getTotalIncome, getRecentIncome } from "@/app/actions/income";
 
 async function signOut() {
   "use server";
@@ -22,15 +23,21 @@ export default async function DashboardPage() {
   const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
 
   // Fetch dashboard data
-  const [expensesResult, totalSpentResult, budgetResult] = await Promise.all([
+  const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult, recentIncomeResult] = await Promise.all([
     getRecentExpenses(4),
     getTotalSpent(),
     getBudget(),
+    getTotalIncome(),
+    getRecentIncome(4),
   ]);
 
   const expenses = expensesResult.expenses;
+  const recentIncome = recentIncomeResult.income;
   const totalSpent = totalSpentResult.total;
-  const budget = budgetResult.budget?.amount || 10000;
+  const baseBudget = budgetResult.budget?.amount || 10000;
+  const totalIncome = totalIncomeResult.total;
+  // Total budget = base budget + income added this month
+  const budget = baseBudget + totalIncome;
   const remaining = budget - totalSpent;
 
   return (
@@ -100,6 +107,7 @@ export default async function DashboardPage() {
           totalSpent={totalSpent}
           remaining={remaining}
           expenses={expenses}
+          income={recentIncome}
         />
       </main>
     </div>

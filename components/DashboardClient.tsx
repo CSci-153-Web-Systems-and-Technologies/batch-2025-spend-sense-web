@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
+import AddIncomeModal from "./AddIncomeModal";
 import EditableBudget from "./EditableBudget";
 
 type DashboardClientProps = {
@@ -15,6 +16,13 @@ type DashboardClientProps = {
     category: string;
     created_at: string;
   }>;
+  income: Array<{
+    id: string;
+    amount: number;
+    description: string;
+    source: string;
+    created_at: string;
+  }>;
 };
 
 const CATEGORY_STYLES: Record<string, { bg: string; emoji: string }> = {
@@ -25,6 +33,17 @@ const CATEGORY_STYLES: Record<string, { bg: string; emoji: string }> = {
   shopping: { bg: "bg-pink-100", emoji: "🛒" },
   utilities: { bg: "bg-orange-100", emoji: "💡" },
   health: { bg: "bg-green-100", emoji: "💊" },
+  other: { bg: "bg-gray-100", emoji: "📦" },
+};
+
+const SOURCE_STYLES: Record<string, { bg: string; emoji: string }> = {
+  salary: { bg: "bg-green-100", emoji: "💼" },
+  allowance: { bg: "bg-blue-100", emoji: "💵" },
+  freelance: { bg: "bg-purple-100", emoji: "💻" },
+  business: { bg: "bg-orange-100", emoji: "🏪" },
+  gift: { bg: "bg-pink-100", emoji: "🎁" },
+  refund: { bg: "bg-yellow-100", emoji: "↩️" },
+  investment: { bg: "bg-teal-100", emoji: "📈" },
   other: { bg: "bg-gray-100", emoji: "📦" },
 };
 
@@ -54,13 +73,29 @@ function getCategoryLabel(category: string): string {
   return labels[category] || category;
 }
 
+function getSourceLabel(source: string): string {
+  const labels: Record<string, string> = {
+    salary: "Salary",
+    allowance: "Allowance",
+    freelance: "Freelance",
+    business: "Business",
+    gift: "Gift",
+    refund: "Refund",
+    investment: "Investment",
+    other: "Other",
+  };
+  return labels[source] || source;
+}
+
 export default function DashboardClient({
   budget,
   totalSpent,
   remaining,
   expenses,
+  income,
 }: DashboardClientProps) {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+  const [isAddIncomeOpen, setIsAddIncomeOpen] = useState(false);
 
   return (
     <>
@@ -130,7 +165,9 @@ export default function DashboardClient({
             </svg>
             Add Expense
           </button>
-          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition opacity-50 cursor-not-allowed">
+          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition"
+            onClick={() => setIsAddIncomeOpen(true)}
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
@@ -231,10 +268,53 @@ export default function DashboardClient({
             </div>
           </div>
         </div>
+
+        {/* Recent Income */}
+        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Income</h2>
+          {income.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              <p>No income yet.</p>
+              <p className="text-sm">Click &quot;Add Income&quot; to get started!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {income.map((inc, index) => {
+                const style = SOURCE_STYLES[inc.source] || SOURCE_STYLES.other;
+                return (
+                  <div
+                    key={inc.id}
+                    className={`flex items-center justify-between py-3 ${
+                      index < income.length - 1 ? "border-b border-gray-100" : ""
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 ${style.bg} rounded-lg flex items-center justify-center`}>
+                        <span className="text-lg">{style.emoji}</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{inc.description}</p>
+                        <p className="text-sm text-gray-400">
+                          {getSourceLabel(inc.source)} · {formatRelativeTime(inc.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-green-500 font-semibold">
+                      +₱{inc.amount.toLocaleString("en-PH", { minimumFractionDigits: 0 })}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add Expense Modal */}
       <AddExpenseModal isOpen={isAddExpenseOpen} onClose={() => setIsAddExpenseOpen(false)} />
+      
+      {/* Add Income Modal */}
+      <AddIncomeModal isOpen={isAddIncomeOpen} onClose={() => setIsAddIncomeOpen(false)} />
     </>
   );
 }
