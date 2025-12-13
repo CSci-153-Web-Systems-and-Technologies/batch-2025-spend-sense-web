@@ -185,38 +185,42 @@ export default function DashboardClient({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <button
             onClick={() => setIsAddExpenseOpen(true)}
-            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 px-3 md:px-4 rounded-lg font-medium transition cursor-pointer text-sm md:text-base"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add Expense
+            <span className="hidden sm:inline">Add Expense</span>
+            <span className="sm:hidden">Expense</span>
           </button>
-          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-3 md:px-4 rounded-lg font-medium transition cursor-pointer text-sm md:text-base"
             onClick={() => setIsAddIncomeOpen(true)}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add Income
+            <span className="hidden sm:inline">Add Income</span>
+            <span className="sm:hidden">Income</span>
           </button>
-          <button 
+          <button
             onClick={() => setIsScanBarcodeOpen(true)}
-            className="flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white py-3 px-3 md:px-4 rounded-lg font-medium transition cursor-pointer text-sm md:text-base"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
             </svg>
-            Scan Barcode
+            <span className="hidden sm:inline">Scan Barcode</span>
+            <span className="sm:hidden">Scan</span>
           </button>
           <button
             onClick={() => setIsSetGoalOpen(true)}
-            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-3 md:px-4 rounded-lg font-medium transition cursor-pointer text-sm md:text-base"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
-            Set Goal
+            <span className="hidden sm:inline">Set Goal</span>
+            <span className="sm:hidden">Goal</span>
           </button>
         </div>
       </div>
@@ -238,9 +242,8 @@ export default function DashboardClient({
                 return (
                   <div
                     key={expense.id}
-                    className={`flex items-center justify-between py-3 ${
-                      index < expenses.length - 1 ? "border-b border-gray-100" : ""
-                    }`}
+                    className={`flex items-center justify-between py-3 ${index < expenses.length - 1 ? "border-b border-gray-100" : ""
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 ${style.bg} rounded-lg flex items-center justify-center`}>
@@ -278,7 +281,7 @@ export default function DashboardClient({
                 const percentage = Math.min((spent / goal.target_amount) * 100, 100);
                 const isOverBudget = spent > goal.target_amount;
                 const categoryStyle = CATEGORY_STYLES[goal.category] || CATEGORY_STYLES.other;
-                
+
                 return (
                   <div key={goal.id}>
                     <div className="flex justify-between mb-1">
@@ -291,14 +294,13 @@ export default function DashboardClient({
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${
-                          isOverBudget 
-                            ? 'bg-red-500' 
-                            : percentage >= 75 
-                              ? 'bg-red-400' 
+                      <div
+                        className={`h-2 rounded-full ${isOverBudget
+                            ? 'bg-red-500'
+                            : percentage >= 75
+                              ? 'bg-red-400'
                               : 'bg-green-500'
-                        }`} 
+                          }`}
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
@@ -334,9 +336,8 @@ export default function DashboardClient({
                 return (
                   <div
                     key={inc.id}
-                    className={`flex items-center justify-between py-3 ${
-                      index < income.length - 1 ? "border-b border-gray-100" : ""
-                    }`}
+                    className={`flex items-center justify-between py-3 ${index < income.length - 1 ? "border-b border-gray-100" : ""
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 ${style.bg} rounded-lg flex items-center justify-center`}>
@@ -361,29 +362,29 @@ export default function DashboardClient({
       </div>
 
       {/* Add Expense Modal */}
-      <AddExpenseModal 
-        isOpen={isAddExpenseOpen} 
+      <AddExpenseModal
+        isOpen={isAddExpenseOpen}
         onClose={() => {
           setIsAddExpenseOpen(false);
           setExpensePrefill(undefined);
-        }} 
+        }}
         prefillData={expensePrefill}
       />
-      
+
       {/* Add Income Modal */}
       <AddIncomeModal isOpen={isAddIncomeOpen} onClose={() => setIsAddIncomeOpen(false)} />
 
       {/* Set Goal Modal */}
-      <SetGoalModal 
-        isOpen={isSetGoalOpen} 
-        onClose={() => setIsSetGoalOpen(false)} 
+      <SetGoalModal
+        isOpen={isSetGoalOpen}
+        onClose={() => setIsSetGoalOpen(false)}
         existingGoals={budgetGoals.map(g => ({ category: g.category, target_amount: g.target_amount }))}
       />
 
       {/* Scan Barcode Modal */}
-      <ScanBarcodeModal 
-        isOpen={isScanBarcodeOpen} 
-        onClose={() => setIsScanBarcodeOpen(false)} 
+      <ScanBarcodeModal
+        isOpen={isScanBarcodeOpen}
+        onClose={() => setIsScanBarcodeOpen(false)}
         onProductScanned={handleBarcodeScanned}
       />
     </>

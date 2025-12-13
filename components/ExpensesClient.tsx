@@ -195,13 +195,13 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Category</label>
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-w-[140px]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                     >
                         {CATEGORIES.map((cat) => (
                             <option key={cat.value} value={cat.value}>
@@ -215,7 +215,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                     <select
                         value={dateRange}
                         onChange={(e) => setDateRange(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-w-[120px]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                     >
                         {DATE_RANGES.map((range) => (
                             <option key={range.value} value={range.value}>
@@ -231,7 +231,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                         placeholder="Search expenses..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-w-[180px]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                     />
                 </div>
             </div>
@@ -266,13 +266,13 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                                         className={`flex items-center justify-between py-3 ${index < filteredExpenses.length - 1 ? "border-b border-gray-100" : ""
                                             }`}
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 ${style.bg} rounded-lg flex items-center justify-center`}>
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <div className={`w-8 h-8 flex-shrink-0 ${style.bg} rounded-lg flex items-center justify-center`}>
                                                 <span className="text-lg">{style.icon}</span>
                                             </div>
-                                            <div>
-                                                <p className="font-medium text-gray-800">{expense.description}</p>
-                                                <p className="text-sm text-gray-400">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium text-gray-800 truncate">{expense.description}</p>
+                                                <p className="text-sm text-gray-400 truncate">
                                                     {getCategoryLabel(expense.category)} · {formatRelativeTime(expense.created_at)}
                                                 </p>
                                             </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import ExpensesClient from "@/components/ExpensesClient";
 import LogoutButton from "@/components/LogoutButton";
+import MobileNav from "@/components/MobileNav";
 import { getExpenses } from "@/app/actions/expenses";
 import { getBudgetGoals } from "@/app/actions/budget-goals";
 
@@ -29,9 +30,9 @@ export default async function ExpensesPage() {
   const expenses = expensesResult.expenses;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100 pb-16 md:pb-0">
       {/* Navigation */}
-      <nav className="w-full px-6 py-3 bg-green-600">
+      <nav className="w-full px-4 sm:px-6 py-3 bg-green-600">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -100,6 +101,9 @@ export default async function ExpensesPage() {
           budgetGoals={budgetGoals}
         />
       </main>
+
+      {/* Mobile Navigation */}
+      <MobileNav />
     </div>
   );
 }
