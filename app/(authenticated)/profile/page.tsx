@@ -1,10 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import ReportsClient from "@/components/ReportsClient";
-import { getExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
-import { getTotalIncome } from "@/app/actions/income";
+import ProfileClient from "@/components/ProfileClient";
 
 async function signOut() {
     "use server";
@@ -13,7 +10,7 @@ async function signOut() {
     redirect("/");
 }
 
-export default async function ReportsPage() {
+export default async function ProfilePage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -22,21 +19,14 @@ export default async function ReportsPage() {
     }
 
     const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
-    const avatarUrl = user.user_metadata?.avatar_url || null;
 
-    // Fetch data for reports
-    const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult] = await Promise.all([
-        getExpenses(),
-        getTotalSpent(),
-        getBudget(),
-        getTotalIncome(),
-    ]);
-
-    const expenses = expensesResult.expenses;
-    const totalSpent = totalSpentResult.total;
-    const baseBudget = budgetResult.budget?.amount || 10000;
-    const totalIncome = totalIncomeResult.total;
-    const totalBudget = baseBudget + totalIncome;
+    const profileData = {
+        id: user.id,
+        email: user.email || "",
+        username: username,
+        avatarUrl: user.user_metadata?.avatar_url || null,
+        createdAt: user.created_at || new Date().toISOString(),
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
@@ -59,7 +49,7 @@ export default async function ReportsPage() {
                         <Link href="/expenses" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
                             Expenses
                         </Link>
-                        <Link href="/reports" className="text-white text-sm font-medium hover:text-green-200 transition underline underline-offset-4">
+                        <Link href="/reports" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
                             Reports
                         </Link>
                         <Link href="/budget-goals" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
@@ -71,23 +61,11 @@ export default async function ReportsPage() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/profile"
-                            className="w-8 h-8 rounded-full flex items-center justify-center hover:ring-2 hover:ring-green-400 transition overflow-hidden"
+                            className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center ring-2 ring-green-400"
                         >
-                            {avatarUrl ? (
-                                <Image
-                                    src={avatarUrl}
-                                    alt="Profile"
-                                    width={32}
-                                    height={32}
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-green-700 flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">
-                                        {username.charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                            )}
+                            <span className="text-white text-sm font-medium">
+                                {username.charAt(0).toUpperCase()}
+                            </span>
                         </Link>
                         <span className="text-white text-sm font-medium hidden sm:block">
                             {username}
@@ -107,19 +85,15 @@ export default async function ReportsPage() {
                 </div>
             </nav>
 
-            {/* Reports Content */}
+            {/* Profile Content */}
             <main className="flex-1 px-6 py-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Reports</h1>
-                    <p className="text-gray-500 text-sm">Analyze your spending patterns and financial habits.</p>
+                    <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
+                    <p className="text-gray-500 text-sm">Manage your account settings and preferences.</p>
                 </div>
 
-                <ReportsClient
-                    expenses={expenses}
-                    totalBudget={totalBudget}
-                    totalSpent={totalSpent}
-                />
+                <ProfileClient user={profileData} />
             </main>
         </div>
     );
