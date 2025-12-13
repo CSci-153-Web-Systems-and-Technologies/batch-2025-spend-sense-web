@@ -2,8 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import DashboardClient from "@/components/DashboardClient";
-import { getRecentExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
-import { getTotalIncome, getRecentIncome } from "@/app/actions/income";
+import { getExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
+import { getTotalIncome, getAllIncome } from "@/app/actions/income";
 import { getBudgetGoals, getSpentByCategory } from "@/app/actions/budget-goals";
 
 async function signOut() {
@@ -24,18 +24,18 @@ export default async function DashboardPage() {
   const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
 
   // Fetch dashboard data
-  const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult, recentIncomeResult, budgetGoals, spentByCategory] = await Promise.all([
-    getRecentExpenses(4),
+  const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult, allIncomeResult, budgetGoals, spentByCategory] = await Promise.all([
+    getExpenses(),
     getTotalSpent(),
     getBudget(),
     getTotalIncome(),
-    getRecentIncome(4),
+    getAllIncome(),
     getBudgetGoals(),
     getSpentByCategory(),
   ]);
 
   const expenses = expensesResult.expenses;
-  const recentIncome = recentIncomeResult.income;
+  const allIncome = allIncomeResult.income;
   const totalSpent = totalSpentResult.total;
   const baseBudget = budgetResult.budget?.amount || 10000;
   const totalIncome = totalIncomeResult.total;
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
           totalSpent={totalSpent}
           remaining={remaining}
           expenses={expenses}
-          income={recentIncome}
+          income={allIncome}
           budgetGoals={budgetGoals}
           spentByCategory={spentByCategory}
         />

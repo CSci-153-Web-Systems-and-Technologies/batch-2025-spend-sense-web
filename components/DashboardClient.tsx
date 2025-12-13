@@ -170,14 +170,14 @@ export default function DashboardClient({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <button
             onClick={() => setIsAddExpenseOpen(true)}
-            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition"
+            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Add Expense
           </button>
-          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition"
+          <button className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
             onClick={() => setIsAddIncomeOpen(true)}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ export default function DashboardClient({
           </button>
           <button
             onClick={() => setIsSetGoalOpen(true)}
-            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition"
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -214,7 +214,7 @@ export default function DashboardClient({
               <p className="text-sm">Click &quot;Add Expense&quot; to get started!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-80 overflow-y-auto">
               {expenses.map((expense, index) => {
                 const style = CATEGORY_STYLES[expense.category] || CATEGORY_STYLES.other;
                 return (
@@ -278,7 +278,7 @@ export default function DashboardClient({
                           isOverBudget 
                             ? 'bg-red-500' 
                             : percentage >= 75 
-                              ? 'bg-orange-400' 
+                              ? 'bg-red-400' 
                               : 'bg-green-500'
                         }`} 
                         style={{ width: `${percentage}%` }}
@@ -300,7 +300,7 @@ export default function DashboardClient({
               <p className="text-sm">Click &quot;Add Income&quot; to get started!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-80 overflow-y-auto">
               {income.map((inc, index) => {
                 const style = SOURCE_STYLES[inc.source] || SOURCE_STYLES.other;
                 return (
