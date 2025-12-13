@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { addIncome } from "@/app/actions/income";
 
@@ -24,6 +24,13 @@ export default function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps)
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Clear error when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setError(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

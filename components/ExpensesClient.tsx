@@ -242,7 +242,10 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                 <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-lg font-semibold text-gray-800">Recent Expenses</h2>
-                        <button className="text-gray-400 hover:text-gray-600 transition">
+                        <button
+                            className="text-gray-400 hover:text-gray-600 transition"
+                            aria-label="Edit expenses"
+                        >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                             </svg>
@@ -282,7 +285,10 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                             })}
                             {filteredExpenses.length > 0 && (
                                 <div className="flex justify-center pt-2">
-                                    <button className="text-gray-400 hover:text-gray-600 transition">
+                                    <button
+                                        className="text-gray-400 hover:text-gray-600 transition"
+                                        aria-label="Show more expenses"
+                                    >
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
