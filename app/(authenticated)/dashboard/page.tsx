@@ -4,6 +4,7 @@ import Link from "next/link";
 import DashboardClient from "@/components/DashboardClient";
 import { getRecentExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
 import { getTotalIncome, getRecentIncome } from "@/app/actions/income";
+import { getBudgetGoals, getSpentByCategory } from "@/app/actions/budget-goals";
 
 async function signOut() {
   "use server";
@@ -23,12 +24,14 @@ export default async function DashboardPage() {
   const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
 
   // Fetch dashboard data
-  const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult, recentIncomeResult] = await Promise.all([
+  const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult, recentIncomeResult, budgetGoals, spentByCategory] = await Promise.all([
     getRecentExpenses(4),
     getTotalSpent(),
     getBudget(),
     getTotalIncome(),
     getRecentIncome(4),
+    getBudgetGoals(),
+    getSpentByCategory(),
   ]);
 
   const expenses = expensesResult.expenses;
@@ -108,6 +111,8 @@ export default async function DashboardPage() {
           remaining={remaining}
           expenses={expenses}
           income={recentIncome}
+          budgetGoals={budgetGoals}
+          spentByCategory={spentByCategory}
         />
       </main>
     </div>

@@ -3,7 +3,14 @@
 import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import AddIncomeModal from "./AddIncomeModal";
+import SetGoalModal from "./SetGoalModal";
 import EditableBudget from "./EditableBudget";
+
+type BudgetGoal = {
+  id: string;
+  category: string;
+  target_amount: number;
+};
 
 type DashboardClientProps = {
   budget: number;
@@ -23,6 +30,8 @@ type DashboardClientProps = {
     source: string;
     created_at: string;
   }>;
+  budgetGoals: BudgetGoal[];
+  spentByCategory: Record<string, number>;
 };
 
 const CATEGORY_STYLES: Record<string, { bg: string; emoji: string }> = {
@@ -93,9 +102,12 @@ export default function DashboardClient({
   remaining,
   expenses,
   income,
+  budgetGoals,
+  spentByCategory,
 }: DashboardClientProps) {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isAddIncomeOpen, setIsAddIncomeOpen] = useState(false);
+  const [isSetGoalOpen, setIsSetGoalOpen] = useState(false);
 
   return (
     <>
@@ -179,7 +191,10 @@ export default function DashboardClient({
             </svg>
             Scan Barcode
           </button>
-          <button className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition opacity-50 cursor-not-allowed">
+          <button
+            onClick={() => setIsSetGoalOpen(true)}
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
@@ -230,43 +245,50 @@ export default function DashboardClient({
           )}
         </div>
 
-        {/* Budget Goals - Placeholder */}
+        {/* Budget Goals - Dynamic */}
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Budget Goals</h2>
-          <div className="space-y-4">
-            {/* Food Budget */}
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-600">Food Budget</span>
-                <span className="text-sm text-gray-800 font-medium">₱800/₱1,200</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '67%' }}></div>
-              </div>
+          {budgetGoals.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              <p>No budget goals set.</p>
+              <p className="text-sm">Click &quot;Set Goal&quot; to get started!</p>
             </div>
-
-            {/* Transportation */}
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-600">Transportation</span>
-                <span className="text-sm text-gray-800 font-medium">₱300/₱500</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '60%' }}></div>
-              </div>
+          ) : (
+            <div className="space-y-4">
+              {budgetGoals.map((goal) => {
+                const spent = spentByCategory[goal.category] || 0;
+                const percentage = Math.min((spent / goal.target_amount) * 100, 100);
+                const isOverBudget = spent > goal.target_amount;
+                const categoryStyle = CATEGORY_STYLES[goal.category] || CATEGORY_STYLES.other;
+                
+                return (
+                  <div key={goal.id}>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-gray-600 flex items-center gap-1">
+                        <span>{categoryStyle.emoji}</span>
+                        {getCategoryLabel(goal.category)}
+                      </span>
+                      <span className={`text-sm font-medium ${isOverBudget ? 'text-red-600' : 'text-gray-800'}`}>
+                        ₱{spent.toLocaleString("en-PH", { minimumFractionDigits: 0 })}/₱{goal.target_amount.toLocaleString("en-PH", { minimumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${
+                          isOverBudget 
+                            ? 'bg-red-500' 
+                            : percentage >= 75 
+                              ? 'bg-orange-400' 
+                              : 'bg-green-500'
+                        }`} 
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Entertainment */}
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-600">Entertainment</span>
-                <span className="text-sm text-gray-800 font-medium">₱450/₱600</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-orange-400 h-2 rounded-full" style={{ width: '75%' }}></div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Recent Income */}
@@ -315,6 +337,13 @@ export default function DashboardClient({
       
       {/* Add Income Modal */}
       <AddIncomeModal isOpen={isAddIncomeOpen} onClose={() => setIsAddIncomeOpen(false)} />
+
+      {/* Set Goal Modal */}
+      <SetGoalModal 
+        isOpen={isSetGoalOpen} 
+        onClose={() => setIsSetGoalOpen(false)} 
+        existingGoals={budgetGoals.map(g => ({ category: g.category, target_amount: g.target_amount }))}
+      />
     </>
   );
 }
