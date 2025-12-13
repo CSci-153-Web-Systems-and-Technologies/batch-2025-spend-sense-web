@@ -293,25 +293,25 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-green-500 rounded-xl p-5 text-white">
-                    <p className="text-2xl font-bold">₱{stats.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
-                    <p className="text-white/80 text-sm">Total Expenses</p>
-                    <p className="text-white/60 text-xs mt-1">+12% from last month</p>
+                <div className="bg-green-500 rounded-xl p-5 text-white shadow-md">
+                    <p className="text-2xl font-bold drop-shadow-sm">₱{stats.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                    <p className="text-white font-medium text-sm">Total Expenses</p>
+                    <p className="text-green-100 text-xs mt-1">+12% from last month</p>
                 </div>
-                <div className="bg-yellow-400 rounded-xl p-5 text-white">
-                    <p className="text-2xl font-bold">₱{stats.dailyAverage.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
-                    <p className="text-white/80 text-sm">Daily Average</p>
-                    <p className="text-white/60 text-xs mt-1">-5% from last month</p>
+                <div className="bg-yellow-500 rounded-xl p-5 text-white shadow-md">
+                    <p className="text-2xl font-bold drop-shadow-sm">₱{stats.dailyAverage.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                    <p className="text-white font-medium text-sm">Daily Average</p>
+                    <p className="text-yellow-100 text-xs mt-1">-5% from last month</p>
                 </div>
-                <div className="bg-teal-500 rounded-xl p-5 text-white">
-                    <p className="text-2xl font-bold">₱{stats.highestDay.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
-                    <p className="text-white/80 text-sm">Highest Single Day</p>
-                    <p className="text-white/60 text-xs mt-1">{mostExpensive.category ? CATEGORY_LABELS[mostExpensive.category] || mostExpensive.category : "N/A"}</p>
+                <div className="bg-teal-500 rounded-xl p-5 text-white shadow-md">
+                    <p className="text-2xl font-bold drop-shadow-sm">₱{stats.highestDay.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                    <p className="text-white font-medium text-sm">Highest Single Day</p>
+                    <p className="text-teal-100 text-xs mt-1">{mostExpensive.category ? CATEGORY_LABELS[mostExpensive.category] || mostExpensive.category : "N/A"}</p>
                 </div>
-                <div className="bg-purple-500 rounded-xl p-5 text-white">
-                    <p className="text-2xl font-bold">{stats.transactionCount}</p>
-                    <p className="text-white/80 text-sm">Total Transactions</p>
-                    <p className="text-white/60 text-xs mt-1">Across {stats.categoryCount} categories</p>
+                <div className="bg-purple-500 rounded-xl p-5 text-white shadow-md">
+                    <p className="text-2xl font-bold drop-shadow-sm">{stats.transactionCount}</p>
+                    <p className="text-white font-medium text-sm">Total Transactions</p>
+                    <p className="text-purple-100 text-xs mt-1">Across {stats.categoryCount} categories</p>
                 </div>
             </div>
 
@@ -353,18 +353,18 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     </div>
 
                     {/* Stats below chart */}
-                    <div className="grid grid-cols-3 gap-4 mt-6 text-center">
+                    <div className="grid grid-cols-3 gap-4 mt-6 text-center border-t border-gray-100 pt-6">
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">₱{stats.dailyAverage.toLocaleString()}</p>
-                            <p className="text-sm text-gray-500">Daily Average</p>
+                            <p className="text-2xl font-bold text-gray-900">₱{stats.dailyAverage.toLocaleString()}</p>
+                            <p className="text-sm text-gray-600 font-medium">Daily Average</p>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">₱{stats.totalAmount.toLocaleString()}</p>
-                            <p className="text-sm text-gray-500">Total {TIME_PERIODS.find(p => p.value === timePeriod)?.label}</p>
+                            <p className="text-2xl font-bold text-gray-900">₱{stats.totalAmount.toLocaleString()}</p>
+                            <p className="text-sm text-gray-600 font-medium">Total {TIME_PERIODS.find(p => p.value === timePeriod)?.label}</p>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">₱{stats.highestDay.toLocaleString()}</p>
-                            <p className="text-sm text-gray-500">Highest single day</p>
+                            <p className="text-2xl font-bold text-gray-900">₱{stats.highestDay.toLocaleString()}</p>
+                            <p className="text-sm text-gray-600 font-medium">Highest single day</p>
                         </div>
                     </div>
                 </div>
@@ -372,31 +372,31 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                 {/* Right Column */}
                 <div className="space-y-4">
                     {/* Most Expensive Category */}
-                    <div className="bg-white rounded-xl p-5 shadow-sm text-center">
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Most Expensive Category</h3>
+                    <div className="bg-white rounded-xl p-5 shadow-sm text-center border border-gray-100">
+                        <h3 className="text-sm font-semibold text-gray-800 mb-3">Most Expensive Category</h3>
                         <div className="text-4xl mb-2">{CATEGORY_ICONS[mostExpensive.category] || "📦"}</div>
-                        <p className="text-lg font-bold text-gray-800">{CATEGORY_LABELS[mostExpensive.category] || "Other"}</p>
-                        <p className="text-sm text-gray-500">₱{mostExpensive.amount.toLocaleString()} · {mostExpensive.percentage}%</p>
+                        <p className="text-lg font-bold text-gray-900">{CATEGORY_LABELS[mostExpensive.category] || "Other"}</p>
+                        <p className="text-sm text-gray-600">₱{mostExpensive.amount.toLocaleString()} · {mostExpensive.percentage}%</p>
                     </div>
 
                     {/* Spending Streak */}
-                    <div className="bg-white rounded-xl p-5 shadow-sm text-center">
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Spending Streak</h3>
+                    <div className="bg-white rounded-xl p-5 shadow-sm text-center border border-gray-100">
+                        <h3 className="text-sm font-semibold text-gray-800 mb-3">Spending Streak</h3>
                         <div className="text-3xl mb-2">🌙</div>
-                        <p className="text-2xl font-bold text-gray-800">{spendingStreak} Days</p>
-                        <p className="text-sm text-gray-500">Consistent Tracking</p>
+                        <p className="text-2xl font-bold text-gray-900">{spendingStreak} Days</p>
+                        <p className="text-sm text-gray-600">Consistent Tracking</p>
                     </div>
 
                     {/* Budget Status */}
-                    <div className="bg-white rounded-xl p-5 shadow-sm text-center border-2 border-blue-200">
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Budget Status</h3>
-                        <div className="w-12 h-12 mx-auto mb-2 rounded-full border-4 border-blue-400 flex items-center justify-center">
-                            <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="bg-purple-50 rounded-xl p-5 shadow-sm text-center border-2 border-purple-200">
+                        <h3 className="text-sm font-semibold text-gray-800 mb-3">Budget Status</h3>
+                        <div className="w-12 h-12 mx-auto mb-2 rounded-full border-4 border-purple-400 flex items-center justify-center bg-white">
+                            <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <p className="text-xl font-bold text-gray-800">{budgetUsed}% used</p>
-                        <p className="text-sm text-gray-500">₱{budgetRemaining.toLocaleString()} remaining</p>
+                        <p className="text-xl font-bold text-gray-900">{budgetUsed}% used</p>
+                        <p className="text-sm text-gray-600">₱{budgetRemaining.toLocaleString()} remaining</p>
                     </div>
                 </div>
             </div>
