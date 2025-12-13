@@ -1,9 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import ReportsClient from "@/components/ReportsClient";
-import { getExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
+import BudgetGoalsClient from "@/components/BudgetGoalsClient";
+import { getTotalSpent, getBudget } from "@/app/actions/expenses";
 import { getTotalIncome } from "@/app/actions/income";
+import { getBudgetGoals, getSpentByCategory } from "@/app/actions/budget-goals";
 
 async function signOut() {
     "use server";
@@ -12,7 +13,7 @@ async function signOut() {
     redirect("/");
 }
 
-export default async function ReportsPage() {
+export default async function BudgetGoalsPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -22,15 +23,15 @@ export default async function ReportsPage() {
 
     const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
 
-    // Fetch data for reports
-    const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult] = await Promise.all([
-        getExpenses(),
+    // Fetch data
+    const [budgetGoals, spentByCategory, totalSpentResult, budgetResult, totalIncomeResult] = await Promise.all([
+        getBudgetGoals(),
+        getSpentByCategory(),
         getTotalSpent(),
         getBudget(),
         getTotalIncome(),
     ]);
 
-    const expenses = expensesResult.expenses;
     const totalSpent = totalSpentResult.total;
     const baseBudget = budgetResult.budget?.amount || 10000;
     const totalIncome = totalIncomeResult.total;
@@ -57,10 +58,10 @@ export default async function ReportsPage() {
                         <Link href="/expenses" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
                             Expenses
                         </Link>
-                        <Link href="/reports" className="text-white text-sm font-medium hover:text-green-200 transition underline underline-offset-4">
+                        <Link href="/reports" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
                             Reports
                         </Link>
-                        <Link href="/budget-goals" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+                        <Link href="/budget-goals" className="text-white text-sm font-medium hover:text-green-200 transition underline underline-offset-4">
                             Budget Goals
                         </Link>
                     </div>
@@ -90,16 +91,17 @@ export default async function ReportsPage() {
                 </div>
             </nav>
 
-            {/* Reports Content */}
+            {/* Budget Goals Content */}
             <main className="flex-1 px-6 py-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Reports</h1>
-                    <p className="text-gray-500 text-sm">Analyze your spending patterns and financial habits.</p>
+                    <h1 className="text-2xl font-bold text-gray-800">Budget Goals</h1>
+                    <p className="text-gray-500 text-sm">Set and track your spending goals for better financial management.</p>
                 </div>
 
-                <ReportsClient
-                    expenses={expenses}
+                <BudgetGoalsClient
+                    budgetGoals={budgetGoals}
+                    spentByCategory={spentByCategory}
                     totalBudget={totalBudget}
                     totalSpent={totalSpent}
                 />
