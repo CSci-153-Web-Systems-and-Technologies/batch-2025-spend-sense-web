@@ -34,23 +34,23 @@ export interface LookupResult {
 // Fetch product from Open Food Facts API (v2)
 export async function fetchFromOpenFoodFacts(barcode: string): Promise<OpenFoodFactsProduct | null> {
   try {
-    // Using v2 API with field selection for better performance
-    const response = await fetch(
-      `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=code,product_name,brands,categories_tags_en,image_url`,
-      { next: { revalidate: 3600 } } // Cache for 1 hour
-    );
-    
+    // Use a CORS proxy for local development (remove for production!)
+    const proxy = "https://corsproxy.io/?";
+    const apiUrl = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=code,product_name,brands,categories_tags_en,image_url`;
+    const url = process.env.NODE_ENV === "development" ? proxy + encodeURIComponent(apiUrl) : apiUrl;
+    const response = await fetch(url, { next: { revalidate: 3600 } });
+
     if (!response.ok) return null;
-    
+
     const data = await response.json();
-    
+
     // v2 API uses status: 1 for found products
     if (data.status !== 1 || !data.product) {
       return null;
     }
-    
+
     const product = data.product;
-    
+
     return {
       barcode,
       name: product.product_name || "Unknown Product",

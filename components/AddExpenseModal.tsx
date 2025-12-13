@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { addExpense } from "@/app/actions/expenses";
+import { createClient } from "@/utils/supabase/client";
 
 type AddExpenseModalProps = {
   isOpen: boolean;
@@ -26,7 +26,7 @@ const CATEGORIES = [
 ];
 
 export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExpenseModalProps) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -54,17 +54,42 @@ export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExp
 
   if (!isOpen) return null;
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setError(null);
-    startTransition(async () => {
-      const result = await addExpense(formData);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        router.refresh();
-        onClose();
+    setIsPending(true);
+    try {
+      const supabase = createClient();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (!user || userError) {
+        setError("Not authenticated. Please log in again.");
+        setIsPending(false);
+        return;
       }
-    });
+      if (!amount || !description || !category) {
+        setError("All fields are required.");
+        setIsPending(false);
+        return;
+      }
+      const { error } = await supabase
+        .from("expenses")
+        .insert({
+          user_id: user.id,
+          amount: parseFloat(amount),
+          description: description.trim(),
+          category,
+        });
+      if (error) {
+        setError(error.message || "Failed to add expense");
+        setIsPending(false);
+        return;
+      }
+      router.refresh();
+      onClose();
+    } catch (err) {
+      setError("Network error while adding expense");
+    }
+    setIsPending(false);
   };
 
   return (
@@ -88,7 +113,7 @@ export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExp
           </div>
         )}
 
-        <form action={handleSubmit} className="space-y-4">
+  <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
               Amount (₱)

@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
-import { lookupProduct, saveUserProduct } from "@/app/actions/products";
+import { lookupProduct } from "@/app/actions/products";
+import { createClient } from "@/utils/supabase/client";
 
 type ScanBarcodeModalProps = {
   isOpen: boolean;
@@ -113,23 +114,28 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
 
     try {
       const result = await lookupProduct(barcode);
-      
-      if (result.product) {
+      if (result && result.product) {
         setProductName(result.product.name);
         setProductCategory(result.product.category || "food");
         if (result.product.price) {
           setProductPrice(result.product.price.toString());
         }
         setProductSource(result.source);
+        setStep("details");
       } else {
+        setError("Product not found. You can enter details manually below.");
         setProductName("");
         setProductCategory("food");
         setProductSource(null);
+        setStep("details");
       }
-      
+    } catch (err) {
+      console.error("Lookup error:", err);
+      setError("Lookup failed (network/auth/CORS?). Enter details manually or try again.");
+      setProductName("");
+      setProductCategory("food");
+      setProductSource(null);
       setStep("details");
-    } catch {
-      setError("Failed to lookup product. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +187,8 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
-          height: { ideal: 720 }
+          height: { ideal: 720 },
+          facingMode: 'environment' // Use back camera on mobile devices
         }
       });
       
@@ -282,19 +289,41 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
       setError("Please enter a valid price");
       return;
     }
-    
+
     const quantity = parseInt(productQuantity) || 1;
     const unitPrice = parseFloat(productPrice);
     const totalAmount = unitPrice * quantity;
 
     if (saveForLater && scannedBarcode) {
       setIsLoading(true);
-      await saveUserProduct(
-        scannedBarcode,
-        productName.trim(),
-        unitPrice,
-        productCategory
-      );
+      try {
+        const supabase = createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (!user || userError) {
+          setError("Not authenticated. Please log in again.");
+          setIsLoading(false);
+          return;
+        }
+        const { error } = await supabase
+          .from("products")
+          .upsert({
+            user_id: user.id,
+            barcode: scannedBarcode,
+            name: productName.trim(),
+            price: unitPrice,
+            category: productCategory,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: "user_id,barcode" });
+        if (error) {
+          setError(error.message || "Failed to save product");
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        setError("Network error while saving product");
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(false);
     }
 
