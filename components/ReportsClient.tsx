@@ -445,13 +445,13 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
     return (
         <>
             {/* Filters */}
-            <div className="flex flex-wrap items-end gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Time Period</label>
                     <select
                         value={timePeriod}
                         onChange={(e) => setTimePeriod(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-w-[130px]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                     >
                         {TIME_PERIODS.map((period) => (
                             <option key={period.value} value={period.value}>
@@ -465,7 +465,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     <select
                         value={reportType}
                         onChange={(e) => setReportType(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-w-[120px]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                     >
                         {REPORT_TYPES.map((type) => (
                             <option key={type.value} value={type.value}>
@@ -479,7 +479,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-w-[140px]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                     >
                         {CATEGORIES.map((cat) => (
                             <option key={cat.value} value={cat.value}>
@@ -488,12 +488,14 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                         ))}
                     </select>
                 </div>
-                <button
-                    onClick={handleGenerateReport}
-                    className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition cursor-pointer"
-                >
-                    Generate Report
-                </button>
+                <div className="flex items-end">
+                    <button
+                        onClick={handleGenerateReport}
+                        className="w-full px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition cursor-pointer"
+                    >
+                        Generate Report
+                    </button>
+                </div>
             </div>
 
             {/* Stats Cards */}

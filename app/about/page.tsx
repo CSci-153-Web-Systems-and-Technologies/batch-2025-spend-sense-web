@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "@/components/Footer";
+import LandingNavbar from "@/components/LandingNavbar";
 
 export default function AboutPage() {
 
@@ -30,44 +31,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600 flex flex-col">
       {/* Navigation */}
-      <nav className="w-full px-8 py-4 bg-green-600">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-xl">$</span>
-            </div>
-            <span className="text-white font-bold text-xl">SpendSense</span>
-          </Link>
-
-          {/* Mobile menu button */}
-          <button className="md:hidden text-white">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
-          {/* Nav Links */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-white text-base font-medium hover:text-green-200 transition">
-              Home
-            </Link>
-            <Link href="/services" className="text-white text-base font-medium hover:text-green-200 transition">
-              Services
-            </Link>
-            <Link href="/contact" className="text-white text-base font-medium hover:text-green-200 transition">
-              Contact
-            </Link>
-            <Link href="/about" className="text-green-200 text-base font-medium underline underline-offset-4">
-              About
-            </Link>
-            <div className="w-px h-5 bg-white/50" />
-            <Link href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
-              Login
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <LandingNavbar currentPage="about" />
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16">
@@ -85,10 +49,10 @@ export default function AboutPage() {
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-16">
           <h2 className="text-3xl font-bold text-white mb-6 text-center">Our Mission</h2>
           <p className="text-lg text-white/90 text-center max-w-4xl mx-auto leading-relaxed">
-            SpendSense was created with a simple mission: to make personal finance management accessible to everyone. 
-            We understand that tracking expenses and budgeting can feel overwhelming, especially when you&apos;re just 
-            starting out. That&apos;s why we built a tool that&apos;s simple, intuitive, and designed specifically 
-            for the Filipino lifestyle. Whether you&apos;re a student, a young professional, or managing a household, 
+            SpendSense was created with a simple mission: to make personal finance management accessible to everyone.
+            We understand that tracking expenses and budgeting can feel overwhelming, especially when you&apos;re just
+            starting out. That&apos;s why we built a tool that&apos;s simple, intuitive, and designed specifically
+            for the Filipino lifestyle. Whether you&apos;re a student, a young professional, or managing a household,
             SpendSense is here to help you build better financial habits.
           </p>
         </div>

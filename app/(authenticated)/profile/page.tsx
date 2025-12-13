@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import ProfileClient from "@/components/ProfileClient";
 import LogoutButton from "@/components/LogoutButton";
+import MobileNav from "@/components/MobileNav";
 
 
 
@@ -25,9 +26,9 @@ export default async function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-100">
+        <div className="min-h-screen flex flex-col bg-gray-100 pb-16 md:pb-0">
             {/* Navigation */}
-            <nav className="w-full px-6 py-3 bg-green-600">
+            <nav className="w-full px-4 sm:px-6 py-3 bg-green-600">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/dashboard" className="flex items-center gap-2">
@@ -81,6 +82,9 @@ export default async function ProfilePage() {
 
                 <ProfileClient user={profileData} />
             </main>
+
+            {/* Mobile Navigation */}
+            <MobileNav />
         </div>
     );
 }

@@ -124,29 +124,28 @@ export default function BudgetGoalsClient({
                 </button>
             </div>
 
-            {/* Monthly Budget Overview */}
             <div className="mb-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Budget Overview</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-green-500 rounded-xl p-5 text-white shadow-md">
-                        <p className="text-2xl font-bold drop-shadow-sm">₱{totalBudget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
-                        <p className="text-white font-medium text-sm">Total Monthly Budget</p>
-                        <p className="text-green-100 text-xs mt-1">Set across {budgetGoals.length} categories</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                    <div className="bg-green-500 rounded-xl p-4 md:p-5 text-white shadow-md">
+                        <p className="text-lg md:text-2xl font-bold drop-shadow-sm">₱{totalBudget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                        <p className="text-white font-medium text-xs md:text-sm">Total Monthly Budget</p>
+                        <p className="text-green-100 text-xs mt-1 hidden sm:block">Set across {budgetGoals.length} categories</p>
                     </div>
-                    <div className="bg-yellow-500 rounded-xl p-5 text-white shadow-md">
-                        <p className="text-2xl font-bold drop-shadow-sm">₱{remainingBudget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
-                        <p className="text-white font-medium text-sm">Remaining Budget</p>
-                        <p className="text-yellow-100 text-xs mt-1">{100 - budgetUsedPercentage}% left this month</p>
+                    <div className="bg-yellow-500 rounded-xl p-4 md:p-5 text-white shadow-md">
+                        <p className="text-lg md:text-2xl font-bold drop-shadow-sm">₱{remainingBudget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                        <p className="text-white font-medium text-xs md:text-sm">Remaining Budget</p>
+                        <p className="text-yellow-100 text-xs mt-1 hidden sm:block">{100 - budgetUsedPercentage}% left this month</p>
                     </div>
-                    <div className="bg-red-400 rounded-xl p-5 text-white shadow-md">
-                        <p className="text-2xl font-bold drop-shadow-sm">₱{totalSpent.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
-                        <p className="text-white font-medium text-sm">Total Spent</p>
-                        <p className="text-red-100 text-xs mt-1">{budgetUsedPercentage}% of budget used</p>
+                    <div className="bg-red-400 rounded-xl p-4 md:p-5 text-white shadow-md">
+                        <p className="text-lg md:text-2xl font-bold drop-shadow-sm">₱{totalSpent.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
+                        <p className="text-white font-medium text-xs md:text-sm">Total Spent</p>
+                        <p className="text-red-100 text-xs mt-1 hidden sm:block">{budgetUsedPercentage}% of budget used</p>
                     </div>
-                    <div className="bg-purple-500 rounded-xl p-5 text-white shadow-md">
-                        <p className="text-2xl font-bold drop-shadow-sm">{goalsOverBudget.length}</p>
-                        <p className="text-white font-medium text-sm">Goals over Budget</p>
-                        <p className="text-purple-100 text-xs mt-1">
+                    <div className="bg-purple-500 rounded-xl p-4 md:p-5 text-white shadow-md">
+                        <p className="text-lg md:text-2xl font-bold drop-shadow-sm">{goalsOverBudget.length}</p>
+                        <p className="text-white font-medium text-xs md:text-sm">Goals over Budget</p>
+                        <p className="text-purple-100 text-xs mt-1 hidden sm:block">
                             {exceededCategories.length > 0
                                 ? `${exceededCategories.slice(0, 2).join(", ")}${exceededCategories.length > 2 ? "..." : ""} exceeded`
                                 : "All on track"}

@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import LandingNavbar from "@/components/LandingNavbar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -14,45 +15,8 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600 flex flex-col">
-      {/* Navigation - darker green header */}
-      <nav className="w-full px-8 py-4 bg-green-600">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-xl">$</span>
-            </div>
-            <span className="text-white font-bold text-xl">SpendSense</span>
-          </a>
-
-          {/* Mobile menu button */}
-          <button className="md:hidden text-white">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
-          {/* Nav Links */}
-          <div className="hidden md:flex items-center gap-8">
-            <a href="/" className="text-green-200 text-base font-medium underline underline-offset-4">
-              Home
-            </a>
-            <a href="/services" className="text-white text-base font-medium hover:text-green-200 transition">
-              Services
-            </a>
-            <a href="/contact" className="text-white text-base font-medium hover:text-green-200 transition">
-              Contact
-            </a>
-            <a href="/about" className="text-white text-base font-medium hover:text-green-200 transition">
-              About
-            </a>
-            <div className="w-px h-5 bg-white/50" />
-            <a href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
-              Login
-            </a>
-          </div>
-        </div>
-      </nav>
+      {/* Navigation */}
+      <LandingNavbar />
 
       {/* Hero Section */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16 text-center">
@@ -60,20 +24,20 @@ export default async function LandingPage() {
           Take Control of Your Finances
         </h1>
 
-        {/* Device Mockups - hide on small screens */}
-        <div className="hidden sm:flex justify-center mb-12">
-          <div className="relative">
-            {/* Laptop */}
-            <div className="bg-gray-900 rounded-t-xl p-2 w-[500px] shadow-2xl">
+        {/* Device Mockups - responsive for all screens */}
+        <div className="flex justify-center mb-8 sm:mb-12 px-4">
+          <div className="relative w-full max-w-[85%] sm:max-w-[400px] md:max-w-[500px]">
+            {/* Laptop - scales with screen */}
+            <div className="bg-gray-900 rounded-t-xl p-1 sm:p-2 shadow-2xl">
               <div className="bg-white rounded-lg overflow-hidden">
                 <BrowserBar />
                 <DashboardContent />
               </div>
             </div>
-            <div className="bg-gray-800 h-4 w-[520px] -ml-2.5 rounded-b-xl" />
+            <div className="bg-gray-800 h-2 sm:h-4 w-[105%] -ml-[2.5%] rounded-b-xl" />
 
-            {/* Phone */}
-            <div className="absolute -right-20 top-4 w-44 bg-gray-900 rounded-3xl p-2 shadow-2xl">
+            {/* Phone - hidden on mobile, visible on sm+ */}
+            <div className="hidden sm:block absolute -right-16 md:-right-20 top-4 w-36 md:w-44 bg-gray-900 rounded-3xl p-2 shadow-2xl">
               <PhoneContent />
             </div>
           </div>
