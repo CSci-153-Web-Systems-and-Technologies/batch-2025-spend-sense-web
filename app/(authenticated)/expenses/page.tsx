@@ -1,10 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DashboardClient from "@/components/DashboardClient";
-import { getExpenses, getTotalSpent, getBudget } from "@/app/actions/expenses";
-import { getTotalIncome, getAllIncome } from "@/app/actions/income";
-import { getBudgetGoals, getSpentByCategory } from "@/app/actions/budget-goals";
+import ExpensesClient from "@/components/ExpensesClient";
+import { getExpenses } from "@/app/actions/expenses";
+import { getBudgetGoals } from "@/app/actions/budget-goals";
 
 async function signOut() {
   "use server";
@@ -13,7 +12,7 @@ async function signOut() {
   redirect("/");
 }
 
-export default async function DashboardPage() {
+export default async function ExpensesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -23,25 +22,13 @@ export default async function DashboardPage() {
 
   const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
 
-  // Fetch dashboard data
-  const [expensesResult, totalSpentResult, budgetResult, totalIncomeResult, allIncomeResult, budgetGoals, spentByCategory] = await Promise.all([
+  // Fetch expenses data
+  const [expensesResult, budgetGoals] = await Promise.all([
     getExpenses(),
-    getTotalSpent(),
-    getBudget(),
-    getTotalIncome(),
-    getAllIncome(),
     getBudgetGoals(),
-    getSpentByCategory(),
   ]);
 
   const expenses = expensesResult.expenses;
-  const allIncome = allIncomeResult.income;
-  const totalSpent = totalSpentResult.total;
-  const baseBudget = budgetResult.budget?.amount || 10000;
-  const totalIncome = totalIncomeResult.total;
-  // Total budget = base budget + income added this month
-  const budget = baseBudget + totalIncome;
-  const remaining = budget - totalSpent;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -58,10 +45,10 @@ export default async function DashboardPage() {
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-white text-sm font-medium hover:text-green-200 transition underline underline-offset-4">
+            <Link href="/dashboard" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
               Dashboard
             </Link>
-            <Link href="/expenses" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
+            <Link href="/expenses" className="text-white text-sm font-medium hover:text-green-200 transition underline underline-offset-4">
               Expenses
             </Link>
             <Link href="#" className="text-white/80 text-sm font-medium hover:text-green-200 transition">
@@ -97,22 +84,17 @@ export default async function DashboardPage() {
         </div>
       </nav>
 
-      {/* Dashboard Content */}
+      {/* Expenses Content */}
       <main className="flex-1 px-6 py-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-          <p className="text-gray-500 text-sm">Track your spending and manage your budget efficiently</p>
+          <h1 className="text-2xl font-bold text-gray-800">Expenses</h1>
+          <p className="text-gray-500 text-sm">Track and manage your daily expenses.</p>
         </div>
 
-        <DashboardClient
-          budget={budget}
-          totalSpent={totalSpent}
-          remaining={remaining}
+        <ExpensesClient
           expenses={expenses}
-          income={allIncome}
           budgetGoals={budgetGoals}
-          spentByCategory={spentByCategory}
         />
       </main>
     </div>

@@ -16,7 +16,7 @@ export type Income = {
 export async function getAllIncome() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", income: [] };
   }
@@ -38,7 +38,7 @@ export async function getAllIncome() {
 export async function getRecentIncome(limit: number = 5) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", income: [] };
   }
@@ -61,7 +61,7 @@ export async function getRecentIncome(limit: number = 5) {
 export async function getTotalIncome() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", total: 0 };
   }
@@ -89,7 +89,7 @@ export async function getTotalIncome() {
 export async function addIncome(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated" };
   }
@@ -116,6 +116,7 @@ export async function addIncome(formData: FormData) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/expenses");
   return { success: true, error: null };
 }
 
@@ -123,7 +124,7 @@ export async function addIncome(formData: FormData) {
 export async function deleteIncome(incomeId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated" };
   }
@@ -139,5 +140,6 @@ export async function deleteIncome(incomeId: string) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/expenses");
   return { success: true, error: null };
 }

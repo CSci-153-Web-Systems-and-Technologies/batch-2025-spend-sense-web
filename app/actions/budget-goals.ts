@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export interface BudgetGoal {
   id: string;
@@ -13,7 +14,7 @@ export interface BudgetGoal {
 
 export async function getBudgetGoals(): Promise<BudgetGoal[]> {
   const supabase = await createClient();
-  
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
@@ -33,7 +34,7 @@ export async function getBudgetGoals(): Promise<BudgetGoal[]> {
 
 export async function getBudgetGoalByCategory(category: string): Promise<BudgetGoal | null> {
   const supabase = await createClient();
-  
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
@@ -56,7 +57,7 @@ export async function getBudgetGoalByCategory(category: string): Promise<BudgetG
 
 export async function upsertBudgetGoal(category: string, targetAmount: number): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
-  
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return { success: false, error: "User not authenticated" };
@@ -81,12 +82,14 @@ export async function upsertBudgetGoal(category: string, targetAmount: number): 
     return { success: false, error: error.message };
   }
 
+  revalidatePath("/dashboard");
+  revalidatePath("/expenses");
   return { success: true };
 }
 
 export async function deleteBudgetGoal(id: string): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
-  
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return { success: false, error: "User not authenticated" };
@@ -103,12 +106,14 @@ export async function deleteBudgetGoal(id: string): Promise<{ success: boolean; 
     return { success: false, error: error.message };
   }
 
+  revalidatePath("/dashboard");
+  revalidatePath("/expenses");
   return { success: true };
 }
 
 export async function getSpentByCategory(): Promise<Record<string, number>> {
   const supabase = await createClient();
-  
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return {};
 
