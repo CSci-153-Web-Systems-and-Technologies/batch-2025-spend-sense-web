@@ -5,6 +5,8 @@ import AddExpenseModal from "./AddExpenseModal";
 import AddIncomeModal from "./AddIncomeModal";
 import SetGoalModal from "./SetGoalModal";
 import EditableBudget from "./EditableBudget";
+import SpendingTrends from "./SpendingTrends";
+import CategoryBreakdown from "./CategoryBreakdown";
 
 type BudgetGoal = {
   id: string;
@@ -289,6 +291,16 @@ export default function DashboardClient({
               })}
             </div>
           )}
+        </div>
+
+        {/* Spending Trends Chart */}
+        <div className="lg:col-span-2">
+          <SpendingTrends expenses={expenses} />
+        </div>
+
+        {/* Category Breakdown Chart */}
+        <div>
+          <CategoryBreakdown expenses={expenses} />
         </div>
 
         {/* Recent Income */}
