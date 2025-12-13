@@ -24,7 +24,7 @@ export type Budget = {
 export async function getExpenses() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", expenses: [] };
   }
@@ -46,7 +46,7 @@ export async function getExpenses() {
 export async function getRecentExpenses(limit: number = 5) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", expenses: [] };
   }
@@ -69,7 +69,7 @@ export async function getRecentExpenses(limit: number = 5) {
 export async function getTotalSpent() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", total: 0 };
   }
@@ -97,7 +97,7 @@ export async function getTotalSpent() {
 export async function addExpense(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated" };
   }
@@ -124,6 +124,7 @@ export async function addExpense(formData: FormData) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/expenses");
   return { success: true, error: null };
 }
 
@@ -131,7 +132,7 @@ export async function addExpense(formData: FormData) {
 export async function deleteExpense(expenseId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated" };
   }
@@ -147,6 +148,7 @@ export async function deleteExpense(expenseId: string) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/expenses");
   return { success: true, error: null };
 }
 
@@ -154,7 +156,7 @@ export async function deleteExpense(expenseId: string) {
 export async function getBudget() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated", budget: null };
   }
@@ -203,13 +205,13 @@ export async function getBudget() {
 export async function updateBudget(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return { error: "Not authenticated" };
   }
 
   const amount = parseFloat(formData.get("amount") as string);
-  
+
   if (!amount || amount <= 0) {
     return { error: "Invalid budget amount" };
   }

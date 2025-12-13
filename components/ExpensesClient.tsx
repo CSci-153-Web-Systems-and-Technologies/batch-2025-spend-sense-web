@@ -89,10 +89,11 @@ function isWithinDateRange(dateString: string, range: string): boolean {
     switch (range) {
         case "today":
             return date.toDateString() === now.toDateString();
-        case "week":
+        case "week": {
             const weekAgo = new Date(now);
             weekAgo.setDate(weekAgo.getDate() - 7);
             return date >= weekAgo;
+        }
         case "month":
             return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
         case "all":
