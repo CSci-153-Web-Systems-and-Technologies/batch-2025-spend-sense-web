@@ -10,6 +10,12 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get('next') ?? '/dashboard'
 
   const redirectTo = request.nextUrl.clone()
+
+  // Fix: Replace 0.0.0.0 with localhost (0.0.0.0 is not accessible from browsers)
+  if (redirectTo.hostname === '0.0.0.0') {
+    redirectTo.hostname = 'localhost'
+  }
+
   redirectTo.pathname = next
   redirectTo.searchParams.delete('token_hash')
   redirectTo.searchParams.delete('type')
