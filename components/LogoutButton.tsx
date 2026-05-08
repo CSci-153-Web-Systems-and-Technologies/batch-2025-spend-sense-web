@@ -33,7 +33,7 @@ export default function LogoutButton() {
             <button
                 type="button"
                 onClick={() => setShowModal(true)}
-                className="text-gray-400 hover:text-gray-600 text-sm transition ml-2"
+                className="text-gray-400 hover:text-gray-600 text-sm transition"
                 title="Logout"
             >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

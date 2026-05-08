@@ -91,7 +91,7 @@ export default function Sidebar({ username, avatarUrl }: SidebarProps) {
       }`}
     >
       {/* Header / Logo */}
-      <div className={`px-4 py-5 flex items-center justify-between`}>
+      <div className={`px-4 py-5 flex items-center ${isCollapsed ? 'flex-col gap-4' : 'justify-between'}`}>
         {!isCollapsed ? (
           <SpendSenseLogo size="md" linkTo="/dashboard" />
         ) : (
@@ -112,7 +112,7 @@ export default function Sidebar({ username, avatarUrl }: SidebarProps) {
         {/* Toggle Button */}
         <button 
           onClick={toggleCollapse}
-          className={`text-gray-400 hover:text-violet-600 transition-colors p-1.5 rounded-lg hover:bg-violet-50 flex-shrink-0 ${isCollapsed ? 'mx-auto mt-4 absolute top-[60px] left-[22px]' : ''}`}
+          className={`text-gray-400 hover:text-violet-600 transition-colors p-1.5 rounded-lg hover:bg-violet-50 flex-shrink-0`}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -19,7 +19,7 @@ export default async function AuthenticatedLayout({
   const avatarUrl = user.user_metadata?.avatar_url || null;
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden">
+    <div className="min-h-screen flex relative">
       {/* Subtle gradient background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-50/80 via-white to-purple-50/50" />
