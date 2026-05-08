@@ -21,21 +21,29 @@ export async function processChatExpense(message: string) {
     }
 
     // Call Gemini to parse the message
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `
-      You are an AI expense tracking assistant. The user wants to log an expense.
-      Extract the amount, description, and category from the user's message.
+      You are an AI financial assistant for SpendSense. The user wants to log either an expense or an income.
+      Extract the type (expense or income), amount, description, and category/source.
       
-      Valid categories are ONLY: food, transportation, school, entertainment, shopping, utilities, health, other.
-      Pick the closest valid category. If you can't determine one, use "other".
+      Valid EXPENSE categories: food, transportation, school, entertainment, shopping, utilities, health, other.
+      Valid INCOME sources: salary, allowance, freelance, business, gift, refund, investment, other.
       
       Return ONLY a valid JSON object with no markdown formatting or backticks. 
       Format exactly like this:
       {
+        "type": "expense",
         "amount": 120.50,
         "description": "Lunch at Jollibee",
         "category": "food"
+      }
+      OR
+      {
+        "type": "income",
+        "amount": 5000,
+        "description": "Monthly Salary",
+        "category": "salary"
       }
       
       User message: "${message}"
@@ -52,32 +60,42 @@ export async function processChatExpense(message: string) {
       parsedData = JSON.parse(jsonString);
     } catch (e) {
       console.error("Failed to parse JSON from AI:", responseText);
-      return { error: "Sorry, I couldn't understand the expense details. Please try rephrasing (e.g., '120 on spaghetti for food')." };
+      return { error: "Sorry, I couldn't understand that. Try something like '120 on lunch' or 'Received 5000 from work'." };
     }
 
     if (!parsedData.amount || !parsedData.description || !parsedData.category) {
-      return { error: "I'm missing some details. Please provide amount, what you bought, and category." };
+      return { error: "I'm missing some details. Please provide the amount and what it's for." };
     }
 
-    // Insert into Supabase
-    const { error: insertError } = await supabase
-      .from("expenses")
-      .insert({
-        user_id: user.id,
-        amount: Number(parsedData.amount),
-        description: parsedData.description,
-        category: parsedData.category.toLowerCase(),
-      });
+    const type = parsedData.type === 'income' ? 'income' : 'expense';
 
-    if (insertError) {
-      console.error("Supabase insert error:", insertError);
-      return { error: "Failed to save the expense to the database." };
+    if (type === 'expense') {
+      const { error: insertError } = await supabase
+        .from("expenses")
+        .insert({
+          user_id: user.id,
+          amount: Number(parsedData.amount),
+          description: parsedData.description,
+          category: parsedData.category.toLowerCase(),
+        });
+
+      if (insertError) return { error: "Failed to save the expense." };
+    } else {
+      const { error: insertError } = await supabase
+        .from("income")
+        .insert({
+          user_id: user.id,
+          amount: Number(parsedData.amount),
+          description: parsedData.description,
+          source: parsedData.category.toLowerCase(),
+        });
+
+      if (insertError) return { error: "Failed to save the income." };
     }
 
     revalidatePath("/dashboard");
     revalidatePath("/expenses");
     
-    // Format amount properly
     const formattedAmount = Number(parsedData.amount).toLocaleString("en-PH", {
       style: "currency",
       currency: "PHP"
@@ -85,7 +103,7 @@ export async function processChatExpense(message: string) {
 
     return { 
       success: true, 
-      message: `Added ${formattedAmount} for ${parsedData.description} under ${parsedData.category}.` 
+      message: `Successfully added ${type}: ${formattedAmount} for ${parsedData.description} (${parsedData.category}).` 
     };
 
   } catch (error: any) {
