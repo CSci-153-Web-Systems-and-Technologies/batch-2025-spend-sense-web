@@ -1,55 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const supabase = createClient();
-
-  // Load saved email on mount
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("spendsense_remembered_email");
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
+    if (!email) {
+      setError("Please enter your email address");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
       });
 
       if (error) {
         setError(error.message);
-        setLoading(false);
       } else {
-        // Save email if remember me is checked
-        if (rememberMe) {
-          localStorage.setItem("spendsense_remembered_email", email);
-        } else {
-          localStorage.removeItem("spendsense_remembered_email");
-        }
-        router.push("/dashboard");
-        router.refresh();
+        setSuccess(
+          "Password reset email sent! Check your inbox for a link to reset your password."
+        );
+        setEmail("");
       }
     } catch (err: any) {
-      console.error("Login error:", err);
-      setError("An unexpected error occurred. Please check if Supabase is correctly configured.");
+      console.error("Forgot password error:", err);
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -84,24 +74,41 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Login Card */}
+          {/* Reset Password Card */}
           <div className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl px-8 py-10 shadow-xl shadow-violet-500/5">
             <h1 className="text-2xl font-bold text-gray-800 text-center mb-2">
-              Welcome back
+              Reset Password
             </h1>
-            <p className="text-gray-500 text-center text-sm mb-8">Sign in to your account to continue</p>
+            <p className="text-gray-500 text-center text-sm mb-8">
+              Enter your email address and we'll send you a link to reset your password
+            </p>
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-center">
-                {error}
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-start gap-3">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-600 text-sm flex items-start gap-3">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>{success}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -113,58 +120,21 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Password Field */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full px-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition"
-                />
-              </div>
-
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 text-gray-500 cursor-pointer hover:text-gray-700 transition">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => {
-                      setRememberMe(e.target.checked);
-                      if (e.target.checked) {
-                        localStorage.setItem("spendsense_remembered_email", email);
-                      } else {
-                        localStorage.removeItem("spendsense_remembered_email");
-                      }
-                    }}
-                    className="w-4 h-4 accent-violet-600 rounded cursor-pointer"
-                  />
-                  Remember me
-                </label>
-                <Link href="/forgot-password" className="text-violet-600 hover:text-violet-700 font-medium transition">
-                  Forgot password?
-                </Link>
-              </div>
-
-              {/* Login Button */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-base font-semibold rounded-xl shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? "Sending..." : "Send Reset Link"}
               </button>
             </form>
 
-            {/* Register Link */}
+            {/* Back to Login */}
             <p className="text-center text-gray-500 text-sm mt-6">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-violet-600 font-semibold hover:text-violet-700 transition">
-                Create one
+              Remember your password?{" "}
+              <Link href="/login" className="text-violet-600 font-semibold hover:text-violet-700 transition">
+                Back to login
               </Link>
             </p>
           </div>

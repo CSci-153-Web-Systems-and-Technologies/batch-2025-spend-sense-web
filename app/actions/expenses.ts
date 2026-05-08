@@ -152,6 +152,42 @@ export async function deleteExpense(expenseId: string) {
   return { success: true, error: null };
 }
 
+// Update an expense
+export async function updateExpense(expenseId: string, formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { error: "Not authenticated" };
+  }
+
+  const amount = parseFloat(formData.get("amount") as string);
+  const description = formData.get("description") as string;
+  const category = formData.get("category") as string;
+
+  if (!amount || !description || !category) {
+    return { error: "All fields are required" };
+  }
+
+  const { error } = await supabase
+    .from("expenses")
+    .update({
+      amount,
+      description,
+      category,
+    })
+    .eq("id", expenseId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/expenses");
+  return { success: true, error: null };
+}
+
 // Get or create budget for current month
 export async function getBudget() {
   const supabase = await createClient();
