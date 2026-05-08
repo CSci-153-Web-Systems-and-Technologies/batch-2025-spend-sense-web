@@ -451,7 +451,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     <select
                         value={timePeriod}
                         onChange={(e) => setTimePeriod(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                     >
                         {TIME_PERIODS.map((period) => (
                             <option key={period.value} value={period.value}>
@@ -465,7 +465,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     <select
                         value={reportType}
                         onChange={(e) => setReportType(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                     >
                         {REPORT_TYPES.map((type) => (
                             <option key={type.value} value={type.value}>
@@ -479,7 +479,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                     >
                         {CATEGORIES.map((cat) => (
                             <option key={cat.value} value={cat.value}>
@@ -491,7 +491,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                 <div className="flex items-end">
                     <button
                         onClick={handleGenerateReport}
-                        className="w-full px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition cursor-pointer"
+                        className="w-full px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium transition cursor-pointer"
                     >
                         Generate Report
                     </button>
@@ -500,10 +500,10 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-green-500 rounded-xl p-5 text-white shadow-md">
+                <div className="bg-violet-600 rounded-xl p-5 text-white shadow-md">
                     <p className="text-2xl font-bold drop-shadow-sm">₱{stats.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
                     <p className="text-white font-medium text-sm">Total Expenses</p>
-                    <p className="text-green-100 text-xs mt-1">+12% from last month</p>
+                    <p className="text-violet-100 text-xs mt-1">+12% from last month</p>
                 </div>
                 <div className="bg-yellow-500 rounded-xl p-5 text-white shadow-md">
                     <p className="text-2xl font-bold drop-shadow-sm">₱{stats.dailyAverage.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
@@ -622,7 +622,7 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                     </button>
                     <button
                         onClick={() => handleExport("Excel")}
-                        className="px-4 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition font-medium cursor-pointer"
+                        className="px-4 py-2 border border-violet-500 text-violet-600 rounded-lg hover:bg-violet-50 transition font-medium cursor-pointer"
                     >
                         Export as Excel
                     </button>

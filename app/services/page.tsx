@@ -37,7 +37,13 @@ export default function ServicesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600 flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-100 via-white to-purple-50" />
+        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-violet-300/30 blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-15%] w-[500px] h-[500px] rounded-full bg-purple-400/20 blur-[100px]" />
+      </div>
       {/* Navigation */}
       <LandingNavbar currentPage="services" />
 
@@ -45,10 +51,10 @@ export default function ServicesPage() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
-            Our Services
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            Our <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Services</span>
           </h1>
-          <p className="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto">
+          <p className="text-xl sm:text-2xl text-gray-500 max-w-3xl mx-auto">
             SpendSense provides powerful tools to help students manage their finances effectively.
           </p>
         </div>
@@ -58,13 +64,13 @@ export default function ServicesPage() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white/10 backdrop-blur-sm rounded-xl p-8 hover:bg-white/20 transition"
+              className="bg-white/60 backdrop-blur-md border border-white/80 rounded-xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <span className="text-5xl mb-6 block">{service.icon}</span>
-              <h3 className="text-2xl font-semibold text-white mb-3">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-3">
                 {service.title}
               </h3>
-              <p className="text-lg text-white/80">{service.description}</p>
+              <p className="text-lg text-gray-500">{service.description}</p>
             </div>
           ))}
         </div>
@@ -73,7 +79,7 @@ export default function ServicesPage() {
         <div className="text-center mb-16">
           <Link
             href="/login"
-            className="inline-block px-10 py-4 bg-orange-500 hover:bg-orange-600 text-white text-xl font-semibold rounded-full shadow-lg transition"
+            className="inline-block px-10 py-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xl font-semibold rounded-xl shadow-lg shadow-violet-500/25 hover:-translate-y-0.5 transition-all duration-300"
           >
             Start Tracking Now
           </Link>

@@ -52,16 +52,16 @@ function getStatusInfo(percentage: number): { label: string; color: string; text
     } else if (percentage >= 75) {
         return { label: "APPROACHING LIMIT", color: "bg-orange-100", textColor: "text-orange-600" };
     } else if (percentage >= 50) {
-        return { label: "ON TRACK", color: "bg-green-100", textColor: "text-green-600" };
+        return { label: "ON TRACK", color: "bg-violet-100", textColor: "text-violet-600" };
     } else {
-        return { label: "WELL UNDER BUDGET", color: "bg-green-100", textColor: "text-green-600" };
+        return { label: "WELL UNDER BUDGET", color: "bg-violet-100", textColor: "text-violet-600" };
     }
 }
 
 function getProgressBarColor(percentage: number): string {
     if (percentage >= 100) return "bg-red-500";
     if (percentage >= 75) return "bg-orange-400";
-    return "bg-green-500";
+    return "bg-violet-500";
 }
 
 export default function BudgetGoalsClient({
@@ -127,10 +127,10 @@ export default function BudgetGoalsClient({
             <div className="mb-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Budget Overview</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                    <div className="bg-green-500 rounded-xl p-4 md:p-5 text-white shadow-md">
+                    <div className="bg-violet-600 rounded-xl p-4 md:p-5 text-white shadow-md">
                         <p className="text-lg md:text-2xl font-bold drop-shadow-sm">₱{totalBudget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
                         <p className="text-white font-medium text-xs md:text-sm">Total Monthly Budget</p>
-                        <p className="text-green-100 text-xs mt-1 hidden sm:block">Set across {budgetGoals.length} categories</p>
+                        <p className="text-violet-100 text-xs mt-1 hidden sm:block">Set across {budgetGoals.length} categories</p>
                     </div>
                     <div className="bg-yellow-500 rounded-xl p-4 md:p-5 text-white shadow-md">
                         <p className="text-lg md:text-2xl font-bold drop-shadow-sm">₱{remainingBudget.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
@@ -162,7 +162,7 @@ export default function BudgetGoalsClient({
                     <p className="text-gray-500 mb-4">Start tracking your spending by setting budget goals for different categories.</p>
                     <button
                         onClick={() => setIsSetGoalOpen(true)}
-                        className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition cursor-pointer"
+                        className="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium transition cursor-pointer"
                     >
                         Set Your First Goal
                     </button>

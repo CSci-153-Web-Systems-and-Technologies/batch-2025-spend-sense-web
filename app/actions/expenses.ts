@@ -180,7 +180,7 @@ export async function getBudget() {
       .from("budgets")
       .insert({
         user_id: user.id,
-        amount: 10000,
+        amount: 0,
         month,
         year,
       })

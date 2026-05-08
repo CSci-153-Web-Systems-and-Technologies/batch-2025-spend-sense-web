@@ -149,7 +149,7 @@ export default function DashboardClient({
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Total Budget */}
-        <motion.div variants={itemVariants} whileHover={{ y: -4, scale: 1.01 }} className="bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden group">
+        <motion.div variants={itemVariants} whileHover={{ y: -4, scale: 1.01 }} className="bg-gradient-to-br from-violet-500 to-violet-700 rounded-2xl p-6 text-white shadow-lg shadow-violet-500/20 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-20 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
             <svg className="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -162,11 +162,11 @@ export default function DashboardClient({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-emerald-50 font-medium tracking-wide text-sm">Total Budget</p>
+              <p className="text-violet-50 font-medium tracking-wide text-sm">Total Budget</p>
             </div>
             <div>
               <EditableBudget initialBudget={budget} />
-              <p className="text-emerald-100 text-xs mt-1 font-medium tracking-wider uppercase">This Month</p>
+              <p className="text-violet-100 text-xs mt-1 font-medium tracking-wider uppercase">This Month</p>
             </div>
           </div>
         </motion.div>
@@ -195,26 +195,26 @@ export default function DashboardClient({
         </motion.div>
 
         {/* Remaining */}
-        <motion.div variants={itemVariants} whileHover={{ y: -4, scale: 1.01 }} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 shadow-xl shadow-gray-200/40 dark:shadow-none relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-5 dark:opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
-             <svg className="w-24 h-24 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.div variants={itemVariants} whileHover={{ y: -4, scale: 1.01 }} className={`bg-gradient-to-br ${remaining >= 0 ? 'from-indigo-500 to-blue-600 shadow-indigo-500/20' : 'from-rose-500 to-red-600 shadow-rose-500/20'} rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group`}>
+          <div className="absolute top-0 right-0 p-4 opacity-20 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+             <svg className="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
           </div>
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-gray-500 dark:text-gray-400 font-medium tracking-wide text-sm">Remaining</p>
+              <p className="text-indigo-50 font-medium tracking-wide text-sm">Remaining</p>
             </div>
             <div>
-              <p className={`text-3xl font-bold tracking-tight ${remaining >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-rose-600 dark:text-rose-400'}`}>
+              <p className="text-3xl font-bold tracking-tight text-white">
                 ₱{remaining.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
               </p>
-              <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 font-medium tracking-wider uppercase">This Month</p>
+              <p className="text-indigo-100 text-xs mt-1 font-medium tracking-wider uppercase">This Month</p>
             </div>
           </div>
         </motion.div>
@@ -231,9 +231,9 @@ export default function DashboardClient({
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => setIsAddExpenseOpen(true)}
-            className="flex flex-col items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-rose-200 dark:hover:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-900/10 text-gray-700 dark:text-gray-200 py-4 px-4 rounded-2xl font-medium transition-colors cursor-pointer shadow-sm"
+            className="flex flex-col items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-violet-200 dark:hover:border-violet-900/50 hover:bg-violet-50 dark:hover:bg-violet-900/10 text-gray-700 dark:text-gray-200 py-4 px-4 rounded-2xl font-medium transition-colors cursor-pointer shadow-sm"
           >
-            <div className="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
@@ -245,7 +245,7 @@ export default function DashboardClient({
              whileHover={{ scale: 1.03 }}
              whileTap={{ scale: 0.97 }}
             onClick={() => setIsAddIncomeOpen(true)}
-            className="flex flex-col items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-900/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-gray-700 dark:text-gray-200 py-4 px-4 rounded-2xl font-medium transition-colors cursor-pointer shadow-sm"
+            className="flex flex-col items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-teal-200 dark:hover:border-teal-900/50 hover:bg-teal-50 dark:hover:bg-teal-900/10 text-gray-700 dark:text-gray-200 py-4 px-4 rounded-2xl font-medium transition-colors cursor-pointer shadow-sm"
           >
              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
