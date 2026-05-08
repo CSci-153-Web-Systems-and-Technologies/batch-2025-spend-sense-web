@@ -207,3 +207,134 @@ export async function deleteAccount() {
         return { error: `Error deleting account: ${e.message}` };
     }
 }
+
+export async function changePassword(currentPassword: string, newPassword: string) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { error: "Not authenticated" };
+    }
+
+    if (!newPassword || newPassword.trim().length < 8) {
+        return { error: "Password must be at least 8 characters long" };
+    }
+
+    if (newPassword === currentPassword) {
+        return { error: "New password must be different from current password" };
+    }
+
+    try {
+        // Update password using Supabase Auth
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword
+        });
+
+        if (error) {
+            return { error: error.message };
+        }
+
+        // Store password change timestamp in user metadata
+        const now = new Date().toISOString();
+        const { error: metaError } = await supabase.auth.updateUser({
+            data: { password_changed_at: now }
+        });
+
+        if (metaError) {
+            console.error("Error updating password change date:", metaError);
+            // Don't return error since password was already changed
+        }
+
+        return { success: true };
+    } catch (e: any) {
+        console.error("Change password error:", e);
+        return { error: `Error changing password: ${e.message}` };
+    }
+}
+
+export async function enable2FA() {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { error: "Not authenticated" };
+    }
+
+    try {
+        // Start MFA enrollment
+        const { data, error } = await supabase.auth.mfa.enroll({
+            factorType: "totp",
+        });
+
+        if (error) {
+            return { error: error.message };
+        }
+
+        return { 
+            success: true, 
+            id: data?.id,
+            secret: data?.totp?.secret,
+            qr: data?.totp?.qr_code
+        };
+    } catch (e: any) {
+        console.error("Enable 2FA error:", e);
+        return { error: `Error enabling 2FA: ${e.message}` };
+    }
+}
+
+export async function verify2FA(factorId: string, code: string) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { error: "Not authenticated" };
+    }
+
+    try {
+        const { data, error } = await supabase.auth.mfa.challengeAndVerify({
+            factorId,
+            code,
+        });
+
+        if (error) {
+            return { error: error.message };
+        }
+
+        return { 
+            success: true,
+            message: "2FA has been enabled successfully"
+        };
+    } catch (e: any) {
+        console.error("Verify 2FA error:", e);
+        return { error: `Error verifying 2FA: ${e.message}` };
+    }
+}
+
+export async function getLastPasswordChange() {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { error: "Not authenticated", lastChanged: "Never" };
+    }
+
+    // Get password change date from user metadata
+    const passwordChangedAt = user.user_metadata?.password_changed_at;
+    
+    let lastChanged = "Never";
+    if (passwordChangedAt) {
+        try {
+            const date = new Date(passwordChangedAt);
+            lastChanged = date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            });
+        } catch (e) {
+            console.error("Error parsing password change date:", e);
+            lastChanged = "Never";
+        }
+    }
+    
+    return { lastChanged };
+}
