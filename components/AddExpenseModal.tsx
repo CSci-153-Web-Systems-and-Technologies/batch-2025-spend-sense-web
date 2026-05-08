@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import { updateExpense } from "@/app/actions/expenses";
 
 type AddExpenseModalProps = {
   isOpen: boolean;
   onClose: () => void;
   prefillData?: {
+    id?: string;
     amount?: number;
     description?: string;
     category?: string;
@@ -33,6 +35,7 @@ export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExp
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const router = useRouter();
+  const isEditing = Boolean(prefillData?.id);
 
   useEffect(() => {
     if (prefillData) {
@@ -68,23 +71,41 @@ export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExp
         setIsPending(false);
         return;
       }
-      const { error } = await supabase
-        .from("expenses")
-        .insert({
-          user_id: user.id,
-          amount: parseFloat(amount),
-          description: description.trim(),
-          category,
-        });
-      if (error) {
-        setError(error.message || "Failed to add expense");
-        setIsPending(false);
-        return;
+
+      // If editing, use updateExpense action
+      if (isEditing && prefillData?.id) {
+        const formData = new FormData();
+        formData.append("amount", amount);
+        formData.append("description", description.trim());
+        formData.append("category", category);
+        
+        const result = await updateExpense(prefillData.id, formData);
+        if (result.error) {
+          setError(result.error);
+          setIsPending(false);
+          return;
+        }
+      } else {
+        // Otherwise, add new expense
+        const { error } = await supabase
+          .from("expenses")
+          .insert({
+            user_id: user.id,
+            amount: parseFloat(amount),
+            description: description.trim(),
+            category,
+          });
+        if (error) {
+          setError(error.message || "Failed to add expense");
+          setIsPending(false);
+          return;
+        }
       }
+
       router.refresh();
       onClose();
     } catch (err) {
-      setError("Network error while adding expense");
+      setError("Network error");
     }
     setIsPending(false);
   };
@@ -106,7 +127,9 @@ export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExp
             className="bg-white dark:bg-gray-900 rounded-3xl p-6 w-full max-w-md shadow-2xl shadow-rose-500/10 border border-gray-100 dark:border-gray-800"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Add Expense</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                {isEditing ? "Edit Expense" : "Add Expense"}
+              </h2>
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
@@ -199,7 +222,7 @@ export default function AddExpenseModal({ isOpen, onClose, prefillData }: AddExp
                   className="flex-1 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-xl shadow-lg shadow-rose-500/30 transition-all font-semibold disabled:opacity-50 cursor-pointer"
                   disabled={isPending}
                 >
-                  {isPending ? "Adding..." : "Add Expense"}
+                  {isPending ? (isEditing ? "Updating..." : "Adding...") : (isEditing ? "Save Changes" : "Add Expense")}
                 </button>
               </div>
             </form>
