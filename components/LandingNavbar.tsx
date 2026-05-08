@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import SpendSenseLogo from "./SpendSenseLogo";
 
 type LandingNavbarProps = {
     currentPage?: "home" | "services" | "contact" | "about";
@@ -18,19 +19,14 @@ export default function LandingNavbar({ currentPage = "home" }: LandingNavbarPro
     ];
 
     return (
-        <nav className="w-full px-4 sm:px-8 py-4 bg-green-600">
-            <div className="flex items-center justify-between">
+        <nav className="sticky top-0 z-50 w-full px-4 sm:px-8 py-3 bg-white/70 backdrop-blur-xl border-b border-gray-200/50">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
-                        <span className="text-white font-bold text-xl">$</span>
-                    </div>
-                    <span className="text-white font-bold text-xl">SpendSense</span>
-                </Link>
+                <SpendSenseLogo size="md" linkTo="/" />
 
                 {/* Mobile menu button */}
                 <button
-                    className="md:hidden text-white p-2"
+                    className="md:hidden text-gray-600 p-2"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="Toggle menu"
                 >
@@ -52,15 +48,17 @@ export default function LandingNavbar({ currentPage = "home" }: LandingNavbarPro
                             key={link.key}
                             href={link.href}
                             className={currentPage === link.key
-                                ? "text-green-200 text-base font-medium underline underline-offset-4"
-                                : "text-white text-base font-medium hover:text-green-200 transition"
+                                ? "text-violet-600 text-sm font-semibold"
+                                : "text-gray-500 text-sm font-medium hover:text-violet-600 transition"
                             }
                         >
                             {link.label}
                         </Link>
                     ))}
-                    <div className="w-px h-5 bg-white/50" />
-                    <Link href="/login" className="px-5 py-1.5 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition">
+                    <Link
+                        href="/login"
+                        className="px-5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 hover:-translate-y-0.5 transition-all duration-300"
+                    >
                         Login
                     </Link>
                 </div>
@@ -68,15 +66,15 @@ export default function LandingNavbar({ currentPage = "home" }: LandingNavbarPro
 
             {/* Mobile Menu */}
             {isMenuOpen && (
-                <div className="md:hidden mt-4 pb-4 border-t border-green-500 pt-4">
+                <div className="md:hidden mt-4 pb-4 border-t border-gray-200/50 pt-4">
                     <div className="flex flex-col gap-4">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.key}
                                 href={link.href}
                                 className={currentPage === link.key
-                                    ? "text-green-200 text-base font-medium"
-                                    : "text-white text-base font-medium hover:text-green-200 transition"
+                                    ? "text-violet-600 text-base font-semibold"
+                                    : "text-gray-600 text-base font-medium hover:text-violet-600 transition"
                                 }
                                 onClick={() => setIsMenuOpen(false)}
                             >
@@ -85,7 +83,7 @@ export default function LandingNavbar({ currentPage = "home" }: LandingNavbarPro
                         ))}
                         <Link
                             href="/login"
-                            className="w-full text-center px-5 py-2 border-2 border-green-400 bg-green-500 text-white rounded-full font-medium hover:bg-green-400 transition"
+                            className="w-full text-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium"
                             onClick={() => setIsMenuOpen(false)}
                         >
                             Login

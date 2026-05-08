@@ -678,7 +678,7 @@ export default function ScanBarcodeModal({ isOpen, onClose, onProductScanned }: 
 
             {/* Product Source Message */}
             {productSource === "user" ? (
-              <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded-lg text-sm">
+              <div className="bg-violet-50 border border-violet-200 text-violet-700 p-3 rounded-lg text-sm">
                 ✅ Found in your saved products! Price auto-filled.
               </div>
             ) : productSource === "openfoodfacts" ? (
