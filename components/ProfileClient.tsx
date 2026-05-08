@@ -542,6 +542,16 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                     <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-lg">
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h3>
 
+                        {/* Error Message */}
+                        {error && (
+                            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-start gap-3">
+                                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                                <span>{error}</span>
+                            </div>
+                        )}
+
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
@@ -610,6 +620,16 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">
                             {is2FASetup ? "Verify 2FA Code" : "Enable Two-Factor Authentication"}
                         </h3>
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-start gap-3">
+                                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                                <span>{error}</span>
+                            </div>
+                        )}
 
                         {!is2FASetup ? (
                             <div>
