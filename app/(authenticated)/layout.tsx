@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
 import SpendSenseLogo from "@/components/SpendSenseLogo";
+import AIChatbot from "@/components/AIChatbot";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -36,7 +37,7 @@ export default async function AuthenticatedLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen pb-16 md:pb-0">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-40">
+        <header className="hidden max-md:flex items-center justify-between px-4 py-3 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-40">
           <SpendSenseLogo size="md" linkTo="/dashboard" />
           <Link
             href="/profile"
@@ -54,6 +55,9 @@ export default async function AuthenticatedLayout({
 
         {children}
       </div>
+
+      {/* AI Chatbot FAB */}
+      <AIChatbot />
 
       {/* Mobile Navigation */}
       <MobileNav />
