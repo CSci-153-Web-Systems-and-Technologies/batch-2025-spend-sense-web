@@ -11,6 +11,14 @@ export function createClient() {
         getUser: async () => ({ data: { user: null }, error: null }),
         getSession: async () => ({ data: { session: null }, error: null }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signInWithPassword: async () => ({ 
+          data: { user: null, session: null }, 
+          error: { message: "Supabase environment variables are missing. Please check your deployment settings.", name: "ConfigError", status: 400 } 
+        }),
+        signUp: async () => ({ 
+          data: { user: null, session: null }, 
+          error: { message: "Supabase environment variables are missing. Please check your deployment settings.", name: "ConfigError", status: 400 } 
+        }),
       },
       from: () => ({
         select: async () => ({ data: [], error: null }),
