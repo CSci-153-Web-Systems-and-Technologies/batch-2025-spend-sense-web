@@ -160,3 +160,50 @@ export async function getProfileData() {
         createdAt: user.created_at || new Date().toISOString(),
     };
 }
+
+export async function deleteAccount() {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { error: "Not authenticated" };
+    }
+
+    try {
+        // Delete all user data from the database
+        // Delete expenses
+        await supabase.from("expenses").delete().eq("user_id", user.id);
+
+        // Delete income
+        await supabase.from("income").delete().eq("user_id", user.id);
+
+        // Delete budget goals
+        await supabase.from("budget_goals").delete().eq("user_id", user.id);
+
+        // Delete budgets
+        await supabase.from("budgets").delete().eq("user_id", user.id);
+
+        // Delete avatar files if they exist
+        const { data: files } = await supabase.storage
+            .from("avatars")
+            .list(user.id);
+
+        if (files && files.length > 0) {
+            const filesToDelete = files.map((f: { name: string }) => `${user.id}/${f.name}`);
+            await supabase.storage.from("avatars").remove(filesToDelete);
+        }
+
+        // Sign out the user
+        const { error: signOutError } = await supabase.auth.signOut();
+
+        if (signOutError) {
+            console.error("Sign out error:", signOutError);
+            // Continue anyway, user data is deleted
+        }
+
+        return { success: true };
+    } catch (e: any) {
+        console.error("Delete account error:", e);
+        return { error: `Error deleting account: ${e.message}` };
+    }
+}
