@@ -17,7 +17,7 @@ export default function AIChatbot() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hi! I'm your AI Expense Assistant. Tell me what you spent on (e.g., '120 on spaghetti for food') and I'll log it for you!",
+      content: "Hi! I'm your AI Financial Assistant. Tell me what you spent or earned (e.g., '120 on spaghetti' or '5000 salary') and I'll log it for you!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -168,7 +168,7 @@ export default function AIChatbot() {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="e.g., '120 on spaghetti food'"
+                  placeholder="e.g., '120 on lunch' or '5000 salary'"
                   disabled={isLoading}
                   className="flex-1 bg-gray-100 dark:bg-gray-800 border-transparent focus:border-violet-300 dark:focus:border-violet-700 focus:bg-white dark:focus:bg-gray-900 text-sm rounded-xl px-4 py-2.5 outline-none transition-all disabled:opacity-50 text-gray-800 dark:text-gray-200"
                 />

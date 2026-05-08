@@ -73,7 +73,7 @@ const CATEGORIES = [
     { value: "other", label: "Other" },
 ];
 
-function getFilteredData(expenses: Expense[], timePeriod: string, categoryFilter: string) {
+function getFilteredData(expenses: Expense[], timePeriod: string, categoryFilter: string, offset: number = 0) {
     const now = new Date();
 
     return expenses.filter((expense) => {
@@ -83,16 +83,20 @@ function getFilteredData(expenses: Expense[], timePeriod: string, categoryFilter
         let inTimePeriod = false;
         switch (timePeriod) {
             case "week":
-                const weekAgo = new Date(now);
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                inTimePeriod = expenseDate >= weekAgo;
+                const weekEnd = new Date(now);
+                weekEnd.setDate(weekEnd.getDate() - (offset * 7));
+                const weekStart = new Date(weekEnd);
+                weekStart.setDate(weekStart.getDate() - 7);
+                inTimePeriod = expenseDate >= weekStart && expenseDate < weekEnd;
                 break;
             case "month":
-                inTimePeriod = expenseDate.getMonth() === now.getMonth() &&
-                    expenseDate.getFullYear() === now.getFullYear();
+                const targetDate = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+                inTimePeriod = expenseDate.getMonth() === targetDate.getMonth() &&
+                    expenseDate.getFullYear() === targetDate.getFullYear();
                 break;
             case "year":
-                inTimePeriod = expenseDate.getFullYear() === now.getFullYear();
+                const targetYear = now.getFullYear() - offset;
+                inTimePeriod = expenseDate.getFullYear() === targetYear;
                 break;
             default:
                 inTimePeriod = true;
@@ -219,11 +223,36 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
         const highestDay = Math.max(...totals, 0);
         const transactionCount = filteredExpenses.length;
 
+        // Previous period for comparison
+        const previousExpenses = getFilteredData(expenses, timePeriod, categoryFilter, 1);
+        const previousTotal = previousExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+        
+        // Daily average for previous period
+        const prevTotals = getChartData(previousExpenses, timePeriod).map(d => d.total);
+        const prevDaysWithData = prevTotals.filter(t => t > 0).length || 1;
+        const prevDailyAverage = Math.round(previousTotal / prevDaysWithData);
+
+        const calculateChange = (current: number, previous: number) => {
+            if (previous === 0) return current > 0 ? 100 : 0;
+            return Math.round(((current - previous) / previous) * 100);
+        };
+
+        const totalChange = calculateChange(totalAmount, previousTotal);
+        const averageChange = calculateChange(dailyAverage, prevDailyAverage);
+
         // Get unique categories
         const categories = new Set(filteredExpenses.map(e => e.category));
 
-        return { totalAmount, dailyAverage, highestDay, transactionCount, categoryCount: categories.size };
-    }, [chartData, filteredExpenses]);
+        return { 
+            totalAmount, 
+            dailyAverage, 
+            highestDay, 
+            transactionCount, 
+            categoryCount: categories.size,
+            totalChange,
+            averageChange
+        };
+    }, [chartData, filteredExpenses, expenses, timePeriod, categoryFilter]);
 
     const mostExpensive = useMemo(() =>
         getMostExpensiveCategory(filteredExpenses),
@@ -503,12 +532,16 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
                 <div className="bg-violet-600 rounded-xl p-5 text-white shadow-md">
                     <p className="text-2xl font-bold drop-shadow-sm">₱{stats.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
                     <p className="text-white font-medium text-sm">Total Expenses</p>
-                    <p className="text-violet-100 text-xs mt-1">+12% from last month</p>
+                    <p className={`text-xs mt-1 ${stats.totalChange > 0 ? 'text-red-200' : 'text-emerald-200'}`}>
+                        {stats.totalChange > 0 ? '+' : ''}{stats.totalChange}% from last period
+                    </p>
                 </div>
                 <div className="bg-yellow-500 rounded-xl p-5 text-white shadow-md">
                     <p className="text-2xl font-bold drop-shadow-sm">₱{stats.dailyAverage.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
                     <p className="text-white font-medium text-sm">Daily Average</p>
-                    <p className="text-yellow-100 text-xs mt-1">-5% from last month</p>
+                    <p className={`text-xs mt-1 ${stats.averageChange > 0 ? 'text-red-200' : 'text-emerald-200'}`}>
+                        {stats.averageChange > 0 ? '+' : ''}{stats.averageChange}% from last period
+                    </p>
                 </div>
                 <div className="bg-teal-500 rounded-xl p-5 text-white shadow-md">
                     <p className="text-2xl font-bold drop-shadow-sm">₱{stats.highestDay.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
