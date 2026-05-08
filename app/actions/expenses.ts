@@ -89,7 +89,7 @@ export async function getTotalSpent() {
     return { error: error.message, total: 0 };
   }
 
-  const total = expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
+  const total = expenses?.reduce((sum: number, exp: { amount: number | string }) => sum + Number(exp.amount), 0) || 0;
   return { total, error: null };
 }
 

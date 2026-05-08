@@ -122,7 +122,7 @@ export async function deleteProfilePicture() {
 
     if (files && files.length > 0) {
         // Delete all avatar files for this user
-        const filesToDelete = files.map(f => `${user.id}/${f.name}`);
+        const filesToDelete = files.map((f: { name: string }) => `${user.id}/${f.name}`);
         await supabase.storage.from("avatars").remove(filesToDelete);
     }
 

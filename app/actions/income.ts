@@ -81,7 +81,7 @@ export async function getTotalIncome() {
     return { error: error.message, total: 0 };
   }
 
-  const total = income?.reduce((sum, inc) => sum + Number(inc.amount), 0) || 0;
+  const total = income?.reduce((sum: number, inc: { amount: number | string }) => sum + Number(inc.amount), 0) || 0;
   return { total, error: null };
 }
 

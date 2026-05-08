@@ -52,7 +52,7 @@ function getCategoryData(expenses: Expense[]) {
 
 export default function CategoryBreakdown({ expenses }: CategoryBreakdownProps) {
   const data = getCategoryData(expenses);
-  const total = data.reduce((sum, d) => sum + d.value, 0);
+  const total = data.reduce((sum: number, d: { value: number }) => sum + d.value, 0);
 
   if (data.length === 0) {
     return (

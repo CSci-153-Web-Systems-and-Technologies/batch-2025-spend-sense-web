@@ -145,7 +145,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
 
     // Calculate total for filtered expenses
     const totalFiltered = useMemo(() => {
-        return filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+        return filteredExpenses.reduce((sum: number, exp: { amount: number | string }) => sum + Number(exp.amount), 0);
     }, [filteredExpenses]);
 
     // Get date range label for display
