@@ -15,8 +15,8 @@ export interface BudgetGoal {
 export async function getBudgetGoals(): Promise<BudgetGoal[]> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) return [];
 
   const { data, error } = await supabase
     .from("budget_goals")
@@ -35,8 +35,8 @@ export async function getBudgetGoals(): Promise<BudgetGoal[]> {
 export async function getBudgetGoalByCategory(category: string): Promise<BudgetGoal | null> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) return null;
 
   const { data, error } = await supabase
     .from("budget_goals")
@@ -58,8 +58,8 @@ export async function getBudgetGoalByCategory(category: string): Promise<BudgetG
 export async function upsertBudgetGoal(category: string, targetAmount: number): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
     return { success: false, error: "User not authenticated" };
   }
 
@@ -90,8 +90,8 @@ export async function upsertBudgetGoal(category: string, targetAmount: number): 
 export async function deleteBudgetGoal(id: string): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
     return { success: false, error: "User not authenticated" };
   }
 
@@ -114,8 +114,8 @@ export async function deleteBudgetGoal(id: string): Promise<{ success: boolean; 
 export async function getSpentByCategory(): Promise<Record<string, number>> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return {};
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) return {};
 
   const { data, error } = await supabase
     .from("expenses")

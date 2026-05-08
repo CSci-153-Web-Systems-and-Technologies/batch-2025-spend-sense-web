@@ -5,7 +5,10 @@ import { redirect } from "next/navigation";
 
 export default async function LandingPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError) {
+    console.error('Auth error on landing page:', authError);
+  }
   if (user) {
     redirect("/dashboard");
   }

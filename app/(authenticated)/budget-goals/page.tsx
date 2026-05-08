@@ -9,9 +9,9 @@ import { getBudgetGoals, getSpentByCategory } from "@/app/actions/budget-goals";
 
 export default async function BudgetGoalsPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (authError || !user) {
         redirect("/login");
     }
 
