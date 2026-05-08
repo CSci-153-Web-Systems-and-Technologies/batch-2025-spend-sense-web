@@ -33,11 +33,12 @@ export async function updateSession(request: NextRequest) {
 
   const {
     data: { user },
+    error,
   } = await supabase.auth.getUser()
 
   // Protected routes - redirect to login if not authenticated
   if (
-    !user &&
+    (!user || error) &&
     request.nextUrl.pathname.startsWith('/dashboard')
   ) {
     const url = request.nextUrl.clone()
