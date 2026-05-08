@@ -467,8 +467,8 @@ export default function ReportsClient({ expenses, totalBudget, totalSpent }: Rep
     };
 
     const handleGenerateReport = () => {
-        // Show a toast/notification that report is generated
-        alert(`Report generated for ${TIME_PERIODS.find(p => p.value === timePeriod)?.label}!\n\nTotal: ₱${stats.totalAmount.toLocaleString()}\nTransactions: ${stats.transactionCount}`);
+        // Generate PDF report
+        exportAsPDF();
     };
 
     return (
