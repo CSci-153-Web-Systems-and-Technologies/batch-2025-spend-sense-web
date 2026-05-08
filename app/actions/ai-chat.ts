@@ -23,9 +23,9 @@ export async function processChatExpense(message: string) {
       return { error: "You must be logged in to use the AI assistant." };
     }
 
-    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
     if (!apiKey) {
-      return { error: "GEMINI_API_KEY is not set. Please configure it in your environment variables." };
+      return { error: "GOOGLE_GENERATIVE_AI_API_KEY is not set. Please configure it in your environment variables." };
     }
 
     try {
