@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 
 export default function LogoutButton() {
     const [showModal, setShowModal] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
@@ -42,8 +48,8 @@ export default function LogoutButton() {
             </button>
 
             {/* Logout Confirmation Modal */}
-            {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {mounted && showModal && createPortal(
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <div
                         className="absolute inset-0 bg-black/50"
@@ -51,7 +57,7 @@ export default function LogoutButton() {
                     />
 
                     {/* Modal */}
-                    <div className="relative bg-white rounded-xl p-6 shadow-xl max-w-sm w-full mx-4">
+                    <div className="relative bg-white rounded-xl p-6 shadow-xl max-w-sm w-full">
                         <div className="text-center">
                             {/* Icon */}
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -89,7 +95,8 @@ export default function LogoutButton() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );
