@@ -47,9 +47,6 @@ export default function MobileNav() {
 
     return (
         <>
-            <div className="md:hidden fixed right-4 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-50">
-                <LogoutButton />
-            </div>
 
             <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-pb">
                 <div className="flex justify-around items-center py-2 px-1">
