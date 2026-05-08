@@ -15,9 +15,9 @@ export type Income = {
 // Get all income for the current user
 export async function getAllIncome() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", income: [] };
   }
 
@@ -37,9 +37,9 @@ export async function getAllIncome() {
 // Get recent income (last 5)
 export async function getRecentIncome(limit: number = 5) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", income: [] };
   }
 
@@ -60,9 +60,9 @@ export async function getRecentIncome(limit: number = 5) {
 // Get total income for current month
 export async function getTotalIncome() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", total: 0 };
   }
 
@@ -81,16 +81,16 @@ export async function getTotalIncome() {
     return { error: error.message, total: 0 };
   }
 
-  const total = income?.reduce((sum, inc) => sum + Number(inc.amount), 0) || 0;
+  const total = income?.reduce((sum: number, inc: { amount: number | string }) => sum + Number(inc.amount), 0) || 0;
   return { total, error: null };
 }
 
 // Add a new income
 export async function addIncome(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated" };
   }
 
@@ -123,9 +123,9 @@ export async function addIncome(formData: FormData) {
 // Delete an income
 export async function deleteIncome(incomeId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated" };
   }
 

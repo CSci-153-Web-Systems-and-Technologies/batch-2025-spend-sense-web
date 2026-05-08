@@ -35,27 +35,33 @@ export default function RegisterPage() {
 
     const origin = window.location.origin.replace('0.0.0.0', 'localhost');
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username,
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username,
+          },
+          emailRedirectTo: `${origin}/auth/confirm`,
         },
-        emailRedirectTo: `${origin}/auth/confirm`,
-      },
-    });
+      });
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      } else {
+        setSuccess("Registration successful! Please check your email to confirm your account, then login.");
+        setLoading(false);
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setAgreeToTerms(false);
+      }
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      setError("An unexpected error occurred. Please check if Supabase is correctly configured.");
       setLoading(false);
-    } else {
-      setSuccess("Registration successful! Please check your email to confirm your account, then login.");
-      setLoading(false);
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setAgreeToTerms(false);
     }
   };
 

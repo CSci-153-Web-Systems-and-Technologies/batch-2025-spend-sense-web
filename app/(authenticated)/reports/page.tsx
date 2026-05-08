@@ -8,9 +8,9 @@ import { getTotalIncome } from "@/app/actions/income";
 
 export default async function ReportsPage() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (authError || !user) {
         redirect("/login");
     }
 

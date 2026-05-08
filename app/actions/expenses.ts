@@ -23,9 +23,9 @@ export type Budget = {
 // Get all expenses for the current user
 export async function getExpenses() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", expenses: [] };
   }
 
@@ -45,9 +45,9 @@ export async function getExpenses() {
 // Get recent expenses (last 5)
 export async function getRecentExpenses(limit: number = 5) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", expenses: [] };
   }
 
@@ -68,9 +68,9 @@ export async function getRecentExpenses(limit: number = 5) {
 // Get total spent for current month
 export async function getTotalSpent() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", total: 0 };
   }
 
@@ -89,16 +89,16 @@ export async function getTotalSpent() {
     return { error: error.message, total: 0 };
   }
 
-  const total = expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
+  const total = expenses?.reduce((sum: number, exp: { amount: number | string }) => sum + Number(exp.amount), 0) || 0;
   return { total, error: null };
 }
 
 // Add a new expense
 export async function addExpense(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated" };
   }
 
@@ -131,9 +131,9 @@ export async function addExpense(formData: FormData) {
 // Delete an expense
 export async function deleteExpense(expenseId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated" };
   }
 
@@ -155,9 +155,9 @@ export async function deleteExpense(expenseId: string) {
 // Get or create budget for current month
 export async function getBudget() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated", budget: null };
   }
 
@@ -204,9 +204,9 @@ export async function getBudget() {
 // Update budget
 export async function updateBudget(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     return { error: "Not authenticated" };
   }
 
