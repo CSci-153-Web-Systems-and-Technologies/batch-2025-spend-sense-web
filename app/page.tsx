@@ -28,27 +28,27 @@ export default async function LandingPage() {
       <LandingNavbar />
 
       {/* Hero Section */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-20 text-center">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 md:py-20 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-100/80 backdrop-blur-sm border border-violet-200/50 text-violet-700 text-sm font-medium mb-6">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-100/80 backdrop-blur-sm border border-violet-200/50 text-violet-700 text-sm font-medium mb-4 sm:mb-6">
           <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
           Smart Financial Tracking
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
           Take Control of<br />
           <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
             Your Finances
           </span>
         </h1>
 
-        <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-12">
+        <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-8 sm:mb-12">
           SpendSense is the ultimate budget management platform designed specifically for students.
           Track expenses, categorize spending, and make every peso count.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16">
           <a
             href="/register"
             className="px-8 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-lg font-semibold rounded-xl shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-0.5 transition-all duration-300"
@@ -64,7 +64,7 @@ export default async function LandingPage() {
         </div>
 
         {/* Device Mockups */}
-        <div className="flex justify-center mb-16 px-4">
+        <div className="flex justify-center mb-10 sm:mb-16 px-2 sm:px-4">
           <div className="relative w-full max-w-[85%] sm:max-w-[500px] md:max-w-[600px]">
             {/* Glow behind mockup */}
             <div className="absolute inset-0 bg-gradient-to-r from-violet-400/20 to-purple-400/20 blur-3xl scale-110 rounded-3xl" />
@@ -86,13 +86,13 @@ export default async function LandingPage() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mb-10 sm:mb-16">
           {[
             { icon: "📊", title: "Budget Tracking", desc: "Set and track your spending in real-time" },
             { icon: "📈", title: "Smart Analytics", desc: "Visualize spending patterns with charts" },
             { icon: "🎯", title: "Goal Setting", desc: "Achieve your financial goals faster" },
           ].map((f) => (
-            <div key={f.title} className="bg-white/60 backdrop-blur-md border border-white/80 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div key={f.title} className="bg-white/60 backdrop-blur-md border border-white/80 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <span className="text-3xl mb-3 block">{f.icon}</span>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">{f.title}</h3>
               <p className="text-sm text-gray-500">{f.desc}</p>
@@ -101,7 +101,7 @@ export default async function LandingPage() {
         </div>
 
         {/* Social proof */}
-        <div className="bg-white/50 backdrop-blur-sm border border-white/80 rounded-2xl p-8 max-w-3xl mx-auto mb-16">
+        <div className="bg-white/50 backdrop-blur-sm border border-white/80 rounded-2xl p-6 sm:p-8 max-w-3xl mx-auto mb-10 sm:mb-16">
           <p className="text-gray-500 text-sm uppercase tracking-wider font-medium mb-2">Trusted by students</p>
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
             Smart Budget Tracking Made Simple

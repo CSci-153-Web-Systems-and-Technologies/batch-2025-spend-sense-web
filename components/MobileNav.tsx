@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LogoutButton from "./LogoutButton";
 
 export default function MobileNav() {
     const pathname = usePathname();
@@ -45,25 +46,31 @@ export default function MobileNav() {
     ];
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-pb">
-            <div className="flex justify-around items-center py-2">
+        <>
+            <div className="md:hidden fixed right-4 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-50">
+                <LogoutButton />
+            </div>
+
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-pb">
+                <div className="flex justify-around items-center py-2 px-1">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition ${isActive
+                            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-lg transition ${isActive
                                     ? "text-violet-600"
                                     : "text-gray-500 hover:text-violet-600"
                                 }`}
                         >
                             {item.icon}
-                            <span className="text-xs font-medium">{item.label}</span>
+                            <span className="text-[11px] font-medium leading-none">{item.label}</span>
                         </Link>
                     );
                 })}
-            </div>
-        </nav>
+                </div>
+            </nav>
+        </>
     );
 }
