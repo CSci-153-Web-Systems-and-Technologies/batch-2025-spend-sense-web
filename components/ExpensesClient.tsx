@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import AddIncomeModal from "./AddIncomeModal";
 import SetGoalModal from "./SetGoalModal";
@@ -110,6 +110,19 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
     const [isScanBarcodeOpen, setIsScanBarcodeOpen] = useState(false);
     const [expensePrefill, setExpensePrefill] = useState<{ id?: string; amount?: number; description?: string; category?: string } | undefined>();
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setOpenMenuId(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Filter states
     const [categoryFilter, setCategoryFilter] = useState("");
@@ -262,7 +275,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Recent Expenses */}
-                <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
+                <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm" ref={menuRef}>
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-lg font-semibold text-gray-800">Recent Expenses</h2>
                         <button
