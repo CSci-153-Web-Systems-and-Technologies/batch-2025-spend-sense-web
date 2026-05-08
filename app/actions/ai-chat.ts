@@ -5,7 +5,6 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
 // Initialize Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function processChatExpense(message: string) {
   try {
@@ -16,12 +15,37 @@ export async function processChatExpense(message: string) {
       return { error: "You must be logged in to use the AI assistant." };
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    if (!apiKey) {
       return { error: "GEMINI_API_KEY is not set. Please configure it in your environment variables." };
     }
 
-    // Call Gemini to parse the message
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Initialize Gemini API
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // Try multiple model names, prioritizing newer/more available models
+    const modelsToTry = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-latest"];
+    let model;
+    let lastError = "";
+
+    for (const modelName of modelsToTry) {
+      try {
+        model = genAI.getGenerativeModel({ model: modelName });
+        // Test the model with a tiny request
+        await model.generateContent({ contents: [{ role: 'user', parts: [{ text: 'test' }] }] });
+        console.log(`✓ AI: Connected using ${modelName}`);
+        break;
+      } catch (e: any) {
+        lastError = e.message || String(e);
+        console.warn(`✗ AI: Model ${modelName} unavailable: ${lastError.substring(0, 80)}`);
+        model = null;
+      }
+    }
+
+    if (!model) {
+      const hint = apiKey.length < 20 ? "API key appears too short. " : "";
+      return { error: `AI unavailable. ${hint}Ensure GEMINI_API_KEY is valid and has access to current Gemini models (2.0-flash, 1.5-flash recommended).` };
+    }
     
     const prompt = `
       You are an AI financial assistant for SpendSense. The user wants to log either an expense or an income.
@@ -50,6 +74,7 @@ export async function processChatExpense(message: string) {
     `;
 
     const result = await model.generateContent(prompt);
+
     const responseText = result.response.text();
     
     // Clean up potential markdown formatting from the response
@@ -60,7 +85,7 @@ export async function processChatExpense(message: string) {
       parsedData = JSON.parse(jsonString);
     } catch (e) {
       console.error("Failed to parse JSON from AI:", responseText);
-      return { error: "Sorry, I couldn't understand that. Try something like '120 on lunch' or 'Received 5000 from work'." };
+      return { error: `AI returned invalid format: ${responseText.substring(0, 100)}...` };
     }
 
     if (!parsedData.amount || !parsedData.description || !parsedData.category) {
@@ -79,7 +104,7 @@ export async function processChatExpense(message: string) {
           category: parsedData.category.toLowerCase(),
         });
 
-      if (insertError) return { error: "Failed to save the expense." };
+      if (insertError) return { error: `Database error (Expense): ${insertError.message}` };
     } else {
       const { error: insertError } = await supabase
         .from("income")
@@ -90,7 +115,7 @@ export async function processChatExpense(message: string) {
           source: parsedData.category.toLowerCase(),
         });
 
-      if (insertError) return { error: "Failed to save the income." };
+      if (insertError) return { error: `Database error (Income): ${insertError.message}` };
     }
 
     revalidatePath("/dashboard");
@@ -108,6 +133,7 @@ export async function processChatExpense(message: string) {
 
   } catch (error: any) {
     console.error("AI Chat Error:", error);
-    return { error: "An unexpected error occurred while processing your request." };
+    // Return the actual error message to help the user debug
+    return { error: `AI Error: ${error.message || "Unknown error occurred"}` };
   }
 }
