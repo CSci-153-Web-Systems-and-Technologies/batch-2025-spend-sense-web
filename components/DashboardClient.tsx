@@ -9,6 +9,7 @@ import ScanBarcodeModal from "./ScanBarcodeModal";
 import EditableBudget from "./EditableBudget";
 import SpendingTrends from "./SpendingTrends";
 import CategoryBreakdown from "./CategoryBreakdown";
+import IntelligentInsights from "./IntelligentInsights";
 
 type BudgetGoal = {
   id: string;
@@ -146,6 +147,14 @@ export default function DashboardClient({
       variants={containerVariants}
       className="space-y-6"
     >
+      {/* Intelligent Budgeting Assistant Insights */}
+      <IntelligentInsights 
+        expenses={expenses}
+        budgetGoals={budgetGoals}
+        totalBudget={budget}
+        totalSpent={totalSpent}
+      />
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Total Budget */}
