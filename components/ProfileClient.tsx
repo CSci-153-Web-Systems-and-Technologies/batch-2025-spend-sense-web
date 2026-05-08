@@ -110,7 +110,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 </div>
             )}
             {success && (
-                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                <div className="mb-4 p-4 bg-violet-50 border border-violet-200 rounded-lg text-violet-700">
                     {success}
                 </div>
             )}
@@ -133,7 +133,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                                     />
                                 </div>
                             ) : (
-                                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                                <div className="w-24 h-24 bg-violet-600 rounded-full flex items-center justify-center shadow-lg">
                                     <span className="text-white text-4xl font-bold">
                                         {user.username.charAt(0).toUpperCase()}
                                     </span>
@@ -174,7 +174,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={isUploading}
-                                    className="text-sm text-green-600 hover:text-green-700 font-medium disabled:opacity-50"
+                                    className="text-sm text-violet-600 hover:text-violet-700 font-medium disabled:opacity-50"
                                 >
                                     {avatarUrl ? "Change Photo" : "Upload Photo"}
                                 </button>
@@ -194,7 +194,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                     {/* Right: Edit Button */}
                     <button
                         onClick={() => setIsEditing(!isEditing)}
-                        className="px-6 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition font-medium"
+                        className="px-6 py-2 border border-violet-500 text-violet-600 rounded-lg hover:bg-violet-50 transition font-medium"
                     >
                         {isEditing ? "Cancel" : "Edit Profile"}
                     </button>
@@ -217,7 +217,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                                     />
                                 ) : (
                                     <p className="text-gray-900 font-medium">{user.username}</p>
@@ -241,7 +241,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                                 <button
                                     onClick={handleSave}
                                     disabled={isSaving}
-                                    className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition disabled:opacity-50"
+                                    className="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium transition disabled:opacity-50"
                                 >
                                     {isSaving ? "Saving..." : "Save Changes"}
                                 </button>
@@ -278,7 +278,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                                     <p className="font-medium text-gray-900">Two-Factor Authentication</p>
                                     <p className="text-sm text-gray-500">Add extra security to your account</p>
                                 </div>
-                                <button className="px-4 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition text-sm font-medium">
+                                <button className="px-4 py-2 border border-violet-500 text-violet-600 rounded-lg hover:bg-violet-50 transition text-sm font-medium">
                                     Enable
                                 </button>
                             </div>
@@ -303,13 +303,13 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">Account Overview</h3>
 
                         <div className="space-y-4">
-                            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center gap-3 p-3 bg-violet-50 rounded-lg">
+                                <div className="w-10 h-10 bg-violet-600 rounded-lg flex items-center justify-center">
                                     <span className="text-white text-lg">✓</span>
                                 </div>
                                 <div>
                                     <p className="font-medium text-gray-900">Account Status</p>
-                                    <p className="text-sm text-green-600">Active</p>
+                                    <p className="text-sm text-violet-600">Active</p>
                                 </div>
                             </div>
 

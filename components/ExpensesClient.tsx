@@ -166,7 +166,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                 </button>
                 <button
                     onClick={() => setIsAddIncomeOpen(true)}
-                    className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
+                    className="flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white py-3 px-4 rounded-lg font-medium transition cursor-pointer"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -201,7 +201,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                     >
                         {CATEGORIES.map((cat) => (
                             <option key={cat.value} value={cat.value}>
@@ -215,7 +215,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                     <select
                         value={dateRange}
                         onChange={(e) => setDateRange(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                     >
                         {DATE_RANGES.map((range) => (
                             <option key={range.value} value={range.value}>
@@ -231,7 +231,7 @@ export default function ExpensesClient({ expenses, budgetGoals }: ExpensesClient
                         placeholder="Search expenses..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
                     />
                 </div>
             </div>

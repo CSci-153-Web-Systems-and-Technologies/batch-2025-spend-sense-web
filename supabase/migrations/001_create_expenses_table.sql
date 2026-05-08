@@ -46,7 +46,7 @@ CREATE POLICY "Users can delete their own expenses"
 CREATE TABLE IF NOT EXISTS budgets (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  amount DECIMAL(10, 2) NOT NULL DEFAULT 10000.00,
+  amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
   month INTEGER NOT NULL,
   year INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
