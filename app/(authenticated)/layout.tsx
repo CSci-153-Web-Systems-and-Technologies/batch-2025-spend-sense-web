@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
 import SpendSenseLogo from "@/components/SpendSenseLogo";
+import AIChatbot from "@/components/AIChatbot";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -54,6 +55,9 @@ export default async function AuthenticatedLayout({
 
         {children}
       </div>
+
+      {/* AI Chatbot FAB */}
+      <AIChatbot />
 
       {/* Mobile Navigation */}
       <MobileNav />
